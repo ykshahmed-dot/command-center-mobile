@@ -220,6 +220,25 @@ body::before{
 .sug-days span{color:var(--accent);text-decoration:underline;text-decoration-style:dashed;margin:0 2px;}
 .sug-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-size:11px;font-weight:500;color:var(--text2);white-space:nowrap;flex-shrink:0;margin-top:4px;}
 
+/* ── PROJECT / FOLDER DETAIL ── */
+.mob-breadcrumb{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.mob-breadcrumb span{cursor:pointer;}
+.mob-breadcrumb span:last-child{color:var(--text);cursor:default;}
+.mob-proj-detail-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:18px;}
+.mob-proj-detail-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;}
+.mob-proj-detail-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;}
+.mob-proj-stats{display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.mob-proj-stat{flex:1;text-align:center;padding:10px 4px;border-right:1px solid var(--border);}
+.mob-proj-stat:last-child{border-right:none;}
+.mob-proj-stat-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
+.mob-proj-stat-label{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;}
+.mob-detail-progress{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.mob-detail-progress-fill{height:100%;border-radius:3px;transition:width 0.5s;}
+.mob-status-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);border-radius:8px;margin:14px 0 8px;}
+.mob-folder-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;cursor:pointer;}
+.mob-folder-card-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:2px;}
+.mob-folder-card-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);}
+
 /* ── PROJECT CARDS ── */
 .proj-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px;cursor:pointer;transition:all 0.18s;display:flex;flex-direction:column;}
 .proj-card:active{transform:scale(0.99);}
@@ -439,6 +458,18 @@ body::before{
     <!-- PROJECTS PAGE -->
     <div class="page" id="page-projects">
       <div id="projects-list"></div>
+      <div class="spacer"></div>
+    </div>
+
+    <!-- PROJECT DETAIL PAGE -->
+    <div class="page" id="page-project-detail">
+      <div id="mob-project-detail-content"></div>
+      <div class="spacer"></div>
+    </div>
+
+    <!-- FOLDER DETAIL PAGE -->
+    <div class="page" id="page-folder-detail">
+      <div id="mob-folder-detail-content"></div>
       <div class="spacer"></div>
     </div>
 
@@ -936,12 +967,12 @@ function switchPage(page,el){
   if(el)el.classList.add('active');
   currentPage=page;
   document.getElementById('main-scroll').scrollTop=0;
-  render();
+  if(page!=='project-detail'&&page!=='folder-detail')render();
   updateFab();
 }
 function updateFab(){
   const fab=document.getElementById('fab');
-  const labels={dashboard:'＋',tasks:'＋',time:'◷',projects:'＋',updates:'◎'};
+  const labels={dashboard:'＋',tasks:'＋',time:'◷',projects:'＋',updates:'◎','project-detail':'＋','folder-detail':'＋'};
   fab.textContent=labels[currentPage]||'＋';
 }
 function fabAction(){
@@ -956,6 +987,7 @@ function render(){
   renderAllTasks();renderDayTabs();renderTimeBlocks();renderSuggestions();
   renderProjects();renderAllUpdates();
 }
+let _mobCurrentProject=null,_mobCurrentFolder=null;
 
 const priOrder={high:0,med:1,low:2};
 // projColor now dynamic via projColorMap()
@@ -1127,10 +1159,11 @@ function quickSchedule(taskId,day){
 }
 
 function renderProjects(){
-  const makeCard=p=>{
+  const makeCard=(p,depth=0)=>{
     const all=tasks.filter(t=>t.project===p.name),done=all.filter(t=>t.status==='done').length,pct=all.length>0?Math.round(done/all.length*100):0;
     const col=p.color||'#888';
-    return `<div class="proj-card" onclick="filterAndGoTasks('${p.name}')">
+    const ml=depth*16;
+    return `<div class="proj-card" onclick="mobViewProject('${p.name}')" style="${ml?'margin-left:'+ml+'px;':''}">
       <div class="proj-card-top">
         <span class="proj-icon">${p.icon||'◆'}</span>
         <span class="proj-name" style="color:${col}">${p.name}</span>
@@ -1149,18 +1182,21 @@ function renderProjects(){
   function renderFolderSection(parentId,depth){
     const children=getFolderChildren(parentId);
     let html='';
+    const ml=depth*16;
     children.forEach(folder=>{
       const folderProjs=projects.filter(p=>p.folder===folder.id);
       const collapsed=folderStates[folder.id]===false;
-      const indent=depth>0?'margin-left:'+depth*16+'px;':'';
-      html+=`<div style="margin-bottom:${collapsed?10:20}px;${indent}">
-        <div class="proj-folder-header" onclick="toggleFolder('${folder.id}')">
-          <span style="font-size:15px;color:var(--text3);transform:rotate(${collapsed?'-90deg':'0deg'});display:inline-block;transition:transform 0.18s;">▾</span>
-          <span class="proj-folder-name">${folder.id}</span>
+      html+=`<div style="margin-bottom:${collapsed?8:16}px;${ml?'margin-left:'+ml+'px;':''}">
+        <div class="proj-folder-header">
+          <span onclick="toggleFolder('${folder.id}')" style="font-size:15px;color:var(--text3);transform:rotate(${collapsed?'-90deg':'0deg'});display:inline-block;transition:transform 0.18s;padding:2px 6px;margin:-2px;">▾</span>
+          <span class="proj-folder-name" onclick="mobViewFolder('${folder.id}')">${folder.id}</span>
           <span class="proj-folder-count">${folderProjs.length}</span>
-          <span class="proj-folder-del" onclick="event.stopPropagation();confirmDeleteFolder('${folder.id}')">× Del</span>
+          <span class="proj-folder-del" onclick="confirmDeleteFolder('${folder.id}')">× Del</span>
         </div>
-        ${collapsed?'':folderProjs.length?folderProjs.map(makeCard).join('')+renderFolderSection(folder.id,depth+1):'<div style="color:var(--text3);font-size:13px;padding:8px 4px;">No projects yet.</div>'+renderFolderSection(folder.id,depth+1)}
+        ${collapsed?'':`
+          ${renderFolderSection(folder.id,depth+1)}
+          ${folderProjs.length?folderProjs.map(p=>makeCard(p,0)).join(''):'<div style="color:var(--text3);font-size:13px;padding:8px 4px;">No projects yet.</div>'}
+        `}
       </div>`;
     });
     return html;
@@ -1169,7 +1205,7 @@ function renderProjects(){
   const ungrouped=projects.filter(p=>!p.folder);
   if(ungrouped.length){
     if(getRootFolders().length)html+=`<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:4px 0 12px;">Ungrouped</div>`;
-    html+=ungrouped.map(makeCard).join('');
+    html+=ungrouped.map(p=>makeCard(p,0)).join('');
   }
   html+=`<div class="proj-card" onclick="openAddProject()" style="border:1.5px dashed var(--border);display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text3);min-height:90px;background:transparent;margin-top:4px;flex-direction:column;">
     <span style="font-size:28px;line-height:1;">+</span><span style="font-size:14px;font-weight:500;">New Project</span>
@@ -1607,13 +1643,135 @@ function closeMobQuickProj(){
 }
 
 function afterProjectSaved(name){populateProjectDropdowns(name);}
-function filterAndGoTasks(proj){
-  taskFilter='all';taskSearch='';
-  document.getElementById('task-search').value='';
-  document.querySelectorAll('#task-filters .filter-pill').forEach((p,i)=>{p.classList.toggle('active',i===0);});
-  switchPage('tasks',document.getElementById('tab-tasks'));
-  const pc=projColorMap();
-  document.getElementById('all-tasks').innerHTML=[...tasks].filter(t=>t.project===proj).sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]).map(taskRowHTML).join('');
+function filterAndGoTasks(proj){mobViewProject(proj);}
+function mobViewProject(projName){
+  const p=projects.find(x=>x.name===projName);if(!p)return;
+  document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active'));
+  document.getElementById('page-project-detail').classList.add('active');
+  document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+  currentPage='project-detail';
+  document.getElementById('main-scroll').scrollTop=0;
+  updateFab();
+  renderMobProjectDetail(projName);
+}
+function mobViewFolder(folderName){
+  document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active'));
+  document.getElementById('page-folder-detail').classList.add('active');
+  document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+  currentPage='folder-detail';
+  document.getElementById('main-scroll').scrollTop=0;
+  updateFab();
+  renderMobFolderDetail(folderName);
+}
+
+// ── PROJECT & FOLDER DETAIL VIEWS ──
+function renderMobProjectDetail(projName){
+  const p=projects.find(x=>x.name===projName);if(!p)return;
+  const el=document.getElementById('mob-project-detail-content');if(!el)return;
+  const projTasks=tasks.filter(t=>t.project===projName);
+  const done=projTasks.filter(t=>t.status==='done').length;
+  const pct=projTasks.length?Math.round(done/projTasks.length*100):0;
+  const col=p.color||'#888';
+  const folderCrumb=p.folder?`<span onclick="mobViewFolder('${p.folder}')">${p.folder}</span><span>/</span>`:'';
+  const statuses=[
+    {key:'inprog',label:'In Progress',color:'var(--accent)',icon:'●'},
+    {key:'todo',label:'To Do',color:'var(--text2)',icon:'○'},
+    {key:'blocked',label:'Blocked',color:'var(--rose)',icon:'⚠'},
+    {key:'done',label:'Done',color:'var(--green)',icon:'✓'},
+  ];
+  let html=`
+    <div class="mob-breadcrumb">
+      <span onclick="switchPage('projects',document.getElementById('tab-projects'))">Projects</span>
+      <span>/</span>${folderCrumb}
+      <span>${projName}</span>
+    </div>
+    <div class="mob-proj-detail-card" style="border-left:4px solid ${col};">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <span style="font-size:32px;">${p.icon||'◆'}</span>
+        <div><div class="mob-proj-detail-name" style="color:${col}">${p.name}</div></div>
+      </div>
+      <div class="mob-proj-detail-desc">${p.desc||'No description.'}</div>
+      <div class="mob-proj-stats">
+        <div class="mob-proj-stat"><div class="mob-proj-stat-val">${projTasks.length}</div><div class="mob-proj-stat-label">Tasks</div></div>
+        <div class="mob-proj-stat"><div class="mob-proj-stat-val">${done}</div><div class="mob-proj-stat-label">Done</div></div>
+        <div class="mob-proj-stat"><div class="mob-proj-stat-val" style="color:var(--accent)">${projTasks.filter(t=>t.status==='inprog').length}</div><div class="mob-proj-stat-label">Active</div></div>
+        <div class="mob-proj-stat"><div class="mob-proj-stat-val">${pct}%</div><div class="mob-proj-stat-label">Done</div></div>
+      </div>
+      <div class="mob-detail-progress"><div class="mob-detail-progress-fill" style="width:${pct}%;background:${col}"></div></div>
+      <div style="display:flex;gap:8px;margin-top:14px;">
+        <div class="btn btn-ghost" style="flex:1;text-align:center;font-size:12px;" onclick="openEditProject('${p.name}')">✎ Edit</div>
+        <div class="btn btn-primary" style="flex:1;text-align:center;font-size:12px;" onclick="openAddTaskSheet()">+ Task</div>
+      </div>
+    </div>`;
+  statuses.forEach(s=>{
+    const list=projTasks.filter(t=>t.status===s.key).sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]);
+    if(!list.length)return;
+    html+=`<div class="mob-status-header">
+      <span style="color:${s.color};font-size:11px;">${s.icon}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);">${s.label}</span>
+      <span style="margin-left:auto;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);">${list.length}</span>
+    </div>
+    <div class="card">${list.map(taskRowHTML).join('')}</div>`;
+  });
+  if(!projTasks.length){
+    html+=`<div class="empty"><div class="empty-icon">${p.icon||'◆'}</div>No tasks yet. Tap + to add one.</div>`;
+  }
+  // Recent updates for this project
+  const projUpds=updates.filter(u=>u.project===projName).sort((a,b)=>new Date(b.time)-new Date(a.time)).slice(0,6);
+  if(projUpds.length){
+    html+=`<div class="section-label" style="margin-top:20px;">◎ Recent Updates</div>
+    <div class="card">${projUpds.map(updateRowHTML).join('')}</div>`;
+  }
+  el.innerHTML=html;
+}
+
+function renderMobFolderDetail(folderName){
+  const el=document.getElementById('mob-folder-detail-content');if(!el)return;
+  const folder=getAllFolders().find(f=>f.id===folderName);
+  const folderProjs=projects.filter(p=>p.folder===folderName);
+  const subFolders=getFolderChildren(folderName);
+  const parentId=folder?.parent;
+  const parentCrumb=parentId?`<span onclick="mobViewFolder('${parentId}')">${parentId}</span><span>/</span>`:'';
+  let html=`
+    <div class="mob-breadcrumb">
+      <span onclick="switchPage('projects',document.getElementById('tab-projects'))">Projects</span>
+      <span>/</span>${parentCrumb}
+      <span>${folderName}</span>
+    </div>
+    <div style="margin-bottom:20px;">
+      <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px;">▸ ${folderName}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);">${folderProjs.length} project${folderProjs.length!==1?'s':''}${subFolders.length?' · '+subFolders.length+' sub-folder'+(subFolders.length!==1?'s':''):''}</div>
+    </div>`;
+  if(subFolders.length){
+    html+=`<div class="section-label">Sub-folders</div>`;
+    subFolders.forEach(sf=>{
+      const sfProjs=projects.filter(p=>p.folder===sf.id);
+      html+=`<div class="mob-folder-card" onclick="mobViewFolder('${sf.id}')">
+        <div class="mob-folder-card-name">▸ ${sf.id}</div>
+        <div class="mob-folder-card-sub">${sfProjs.length} project${sfProjs.length!==1?'s':''}</div>
+      </div>`;
+    });
+  }
+  if(folderProjs.length){
+    html+=`<div class="section-label" style="margin-top:14px;">Projects</div>`;
+    folderProjs.forEach(p=>{
+      const all=tasks.filter(t=>t.project===p.name),done=all.filter(t=>t.status==='done').length,pct=all.length?Math.round(done/all.length*100):0;
+      const col=p.color||'#888';
+      html+=`<div class="proj-card" onclick="mobViewProject('${p.name}')">
+        <div class="proj-card-top"><span class="proj-icon">${p.icon||'◆'}</span><span class="proj-name" style="color:${col}">${p.name}</span></div>
+        <div class="proj-desc">${p.desc||'No description.'}</div>
+        <div class="proj-bar"><div class="proj-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+        <div class="proj-meta"><span>${all.length} tasks</span><span>${pct}% done</span></div>
+        <div class="proj-card-actions" onclick="event.stopPropagation()">
+          <div class="proj-action-btn" onclick="openEditProject('${p.name}')">✎ Edit</div>
+          <div class="proj-action-btn del" onclick="confirmDeleteProject('${p.name}')">× Delete</div>
+        </div>
+      </div>`;
+    });
+  } else {
+    html+=`<div class="empty"><div class="empty-icon">▸</div>No projects yet.</div>`;
+  }
+  el.innerHTML=html;
 }
 
 // ── NOTIFICATIONS ──
