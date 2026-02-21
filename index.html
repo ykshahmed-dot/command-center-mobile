@@ -221,14 +221,22 @@ body::before{
 .sug-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-size:11px;font-weight:500;color:var(--text2);white-space:nowrap;flex-shrink:0;margin-top:4px;}
 
 /* ── PROJECT CARDS ── */
-.proj-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;cursor:pointer;}
-.proj-card-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.proj-icon{font-size:22px;}
-.proj-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
-.proj-desc{font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5;}
-.proj-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:8px;}
+.proj-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px;cursor:pointer;transition:all 0.18s;display:flex;flex-direction:column;}
+.proj-card:active{transform:scale(0.99);}
+.proj-folder-header{display:flex;align-items:center;gap:10px;padding:16px 18px;background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;cursor:pointer;min-height:56px;}
+.proj-folder-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.proj-folder-count{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);background:var(--surface2);padding:2px 8px;border-radius:20px;}
+.proj-folder-del{font-size:12px;color:var(--text3);padding:4px 10px;border-radius:6px;border:1px solid var(--border);}
+.proj-card-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.proj-icon{font-size:24px;}
+.proj-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;flex:1;}
+.proj-desc{font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.6;}
+.proj-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:10px;}
 .proj-bar-fill{height:100%;border-radius:2px;}
-.proj-meta{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9.5px;color:var(--text3);}
+.proj-meta{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-top:auto;}
+.proj-card-actions{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.proj-action-btn{flex:1;text-align:center;padding:8px;border-radius:8px;border:1px solid var(--border);font-size:12px;color:var(--text2);background:var(--surface2);}
+.proj-action-btn.del{color:var(--rose);border-color:color-mix(in srgb,var(--rose) 30%,transparent);}
 
 /* ── EMPTY STATE ── */
 .empty{text-align:center;padding:30px 20px;color:var(--text3);font-size:13px;}
@@ -663,6 +671,18 @@ body::before{
   </div>
 </div>
 
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal" style="z-index:1000;">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px;max-width:320px;width:90%;margin:auto;">
+    <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:10px;" id="confirm-title">Confirm</div>
+    <p id="confirm-msg" style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px;"></p>
+    <div style="display:flex;gap:10px;">
+      <div class="btn btn-ghost" style="flex:1;text-align:center;" onclick="document.getElementById('confirm-modal').classList.remove('open');_confirmReject&&_confirmReject()">Cancel</div>
+      <div class="btn btn-primary" id="confirm-ok-btn" style="flex:1;text-align:center;background:var(--rose);box-shadow:none;" onclick="document.getElementById('confirm-modal').classList.remove('open');_confirmResolve&&_confirmResolve()">Delete</div>
+    </div>
+  </div>
+</div>
+
 <!-- EDIT TIME BLOCK SHEET -->
 <div class="sheet-overlay" id="edit-tb-sheet">
   <div class="sheet">
@@ -856,7 +876,7 @@ const DEFAULT_PROJECTS=[];
 
 // ── CLEAR ALL DATA ON FIRST RUN ──
 (function(){
-  const VERSION='v3-clean';
+  const VERSION='v4-clean';
   if(localStorage.getItem('cc_version')!==VERSION){
     ['cc_tasks','cc_tb','cc_updates','cc_projects','cc_folders','cc_folder_states'].forEach(k=>localStorage.removeItem(k));
     localStorage.setItem('cc_version',VERSION);
@@ -1109,39 +1129,50 @@ function quickSchedule(taskId,day){
 function renderProjects(){
   const makeCard=p=>{
     const all=tasks.filter(t=>t.project===p.name),done=all.filter(t=>t.status==='done').length,pct=all.length>0?Math.round(done/all.length*100):0;
+    const col=p.color||'#888';
     return `<div class="proj-card" onclick="filterAndGoTasks('${p.name}')">
       <div class="proj-card-top">
-        <span class="proj-icon">${p.icon}</span>
-        <span class="proj-name" style="color:${p.color}">${p.name}</span>
-        <span onclick="event.stopPropagation();openEditProject('${p.name}')" style="margin-left:auto;color:var(--text3);font-size:16px;cursor:pointer;">✎</span>
+        <span class="proj-icon">${p.icon||'◆'}</span>
+        <span class="proj-name" style="color:${col}">${p.name}</span>
       </div>
       <div class="proj-desc">${p.desc||'No description.'}</div>
-      <div class="proj-bar"><div class="proj-bar-fill" style="width:${pct}%;background:${p.color}"></div></div>
-      <div class="proj-meta"><span>${all.length} tasks</span><span>${pct}% done</span></div>
+      <div class="proj-bar"><div class="proj-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+      <div class="proj-meta"><span>${all.length} task${all.length!==1?'s':''}</span><span>${pct}% done</span></div>
+      <div class="proj-card-actions" onclick="event.stopPropagation()">
+        <div class="proj-action-btn" onclick="openEditProject('${p.name}')">✎ Edit</div>
+        <div class="proj-action-btn del" onclick="confirmDeleteProject('${p.name}')">× Delete</div>
+      </div>
     </div>`;
   };
-  const storedFolders=JSON.parse(localStorage.getItem('cc_folders')||'[]');
-  const namedFolders=[...new Set([...storedFolders,...projects.map(p=>p.folder).filter(Boolean)])].sort();
+  getAllFolders();
   const folderStates=JSON.parse(localStorage.getItem('cc_folder_states')||'{}');
-  let html='';
-  // 1. Named folders
-  namedFolders.forEach(folder=>{
-    const folderProjs=projects.filter(p=>p.folder===folder);
-    const collapsed=folderStates[folder]===false;
-    html+=`<div style="margin-bottom:${collapsed?8:16}px;">
-      <div onclick="toggleFolder('${folder}')" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:0 4px;">
-        <span style="font-size:13px;color:var(--text3);transition:transform 0.2s;display:inline-block;transform:rotate(${collapsed?'-90':'0'}deg)">▾</span>
-        <span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--text2);font-weight:500;">${folder}</span>
-        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:4px;">${folderProjs.length}</span>
-      </div>
-      ${collapsed?'':folderProjs.length?folderProjs.map(makeCard).join(''):'<div style="color:var(--text3);font-size:12px;padding:4px;">No projects yet.</div>'}
-    </div>`;
-  });
-  // 2. Always render ungrouped
+  function renderFolderSection(parentId,depth){
+    const children=getFolderChildren(parentId);
+    let html='';
+    children.forEach(folder=>{
+      const folderProjs=projects.filter(p=>p.folder===folder.id);
+      const collapsed=folderStates[folder.id]===false;
+      const indent=depth>0?'margin-left:'+depth*16+'px;':'';
+      html+=`<div style="margin-bottom:${collapsed?10:20}px;${indent}">
+        <div class="proj-folder-header" onclick="toggleFolder('${folder.id}')">
+          <span style="font-size:15px;color:var(--text3);transform:rotate(${collapsed?'-90deg':'0deg'});display:inline-block;transition:transform 0.18s;">▾</span>
+          <span class="proj-folder-name">${folder.id}</span>
+          <span class="proj-folder-count">${folderProjs.length}</span>
+          <span class="proj-folder-del" onclick="event.stopPropagation();confirmDeleteFolder('${folder.id}')">× Del</span>
+        </div>
+        ${collapsed?'':folderProjs.length?folderProjs.map(makeCard).join('')+renderFolderSection(folder.id,depth+1):'<div style="color:var(--text3);font-size:13px;padding:8px 4px;">No projects yet.</div>'+renderFolderSection(folder.id,depth+1)}
+      </div>`;
+    });
+    return html;
+  }
+  let html=renderFolderSection(null,0);
   const ungrouped=projects.filter(p=>!p.folder);
-  if(ungrouped.length) html+=ungrouped.map(makeCard).join('');
-  html+=`<div class="proj-card" onclick="openAddProject()" style="border:1.5px dashed var(--border);display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text3);min-height:80px;background:transparent;margin-top:8px;">
-    <span style="font-size:24px;">+</span><span style="font-size:14px;font-weight:500;">New Project</span>
+  if(ungrouped.length){
+    if(getRootFolders().length)html+=`<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:4px 0 12px;">Ungrouped</div>`;
+    html+=ungrouped.map(makeCard).join('');
+  }
+  html+=`<div class="proj-card" onclick="openAddProject()" style="border:1.5px dashed var(--border);display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text3);min-height:90px;background:transparent;margin-top:4px;flex-direction:column;">
+    <span style="font-size:28px;line-height:1;">+</span><span style="font-size:14px;font-weight:500;">New Project</span>
   </div>`;
   document.getElementById('projects-list').innerHTML=html;
 }
@@ -1365,6 +1396,16 @@ function fmtTimestamp(iso){
   if(d.toDateString()===yest.toDateString())return`Yesterday · ${ts}`;
   return`${MONS[d.getMonth()]} ${d.getDate()} · ${ts}`;
 }
+let _confirmResolve=null,_confirmReject=null;
+function showConfirm(title,msg,okLabel='Delete'){
+  return new Promise((resolve,reject)=>{
+    _confirmResolve=resolve;_confirmReject=reject;
+    document.getElementById('confirm-title').textContent=title;
+    document.getElementById('confirm-msg').textContent=msg;
+    document.getElementById('confirm-ok-btn').textContent=okLabel;
+    document.getElementById('confirm-modal').classList.add('open');
+  });
+}
 let toastTimer;
 function showToast(icon,msg){
   const t=document.getElementById('toast');
@@ -1387,15 +1428,41 @@ function selectProjColor(col){
 }
 function getProjColor(){return _selectedColor||PROJ_COLORS[0];}
 function getAllFolders(){
-  const stored=JSON.parse(localStorage.getItem('cc_folders')||'[]');
+  let stored=JSON.parse(localStorage.getItem('cc_folders')||'[]');
+  if(stored.length&&typeof stored[0]==='string'){
+    stored=stored.map(n=>({id:n,parent:null}));
+    localStorage.setItem('cc_folders',JSON.stringify(stored));
+  }
   const fromProjs=projects.map(p=>p.folder||'').filter(Boolean);
-  return [...new Set([...stored,...fromProjs])];
+  fromProjs.forEach(n=>{if(!stored.find(f=>f.id===n))stored.push({id:n,parent:null});});
+  return stored;
 }
+function getFolderNames(){return getAllFolders().map(f=>f.id);}
+function saveFolders(folders){localStorage.setItem('cc_folders',JSON.stringify(folders));}
+function addFolder(name,parent=null){
+  const folders=getAllFolders();
+  if(folders.find(f=>f.id===name)){showToast('⚠','Folder already exists');return false;}
+  folders.push({id:name,parent});saveFolders(folders);return true;
+}
+function deleteFolder(name){
+  let folders=getAllFolders();
+  folders=folders.map(f=>f.parent===name?{...f,parent:null}:f).filter(f=>f.id!==name);
+  saveFolders(folders);
+  projects.forEach(p=>{if(p.folder===name)p.folder='';});saveProjects();
+}
+function getFolderChildren(parentId){return getAllFolders().filter(f=>f.parent===parentId);}
+function getRootFolders(){return getAllFolders().filter(f=>!f.parent);}
 function updateFolderSuggestions(selectedFolder){
   const sel=document.getElementById('proj-folder-inp');
   if(!sel)return;
-  const folders=getAllFolders();
-  sel.innerHTML='<option value="">— No folder —</option>'+folders.map(f=>`<option value="${f}">${f}</option>`).join('');
+  getAllFolders();
+  function buildOpts(parentId,depth){
+    return getFolderChildren(parentId).map(f=>{
+      const prefix='  '.repeat(depth);
+      return `<option value="${f.id}">${prefix}${depth>0?'↳ ':''}${f.id}</option>`+buildOpts(f.id,depth+1);
+    }).join('');
+  }
+  sel.innerHTML='<option value="">— No folder —</option>'+buildOpts(null,0);
   if(selectedFolder)sel.value=selectedFolder;
 }
 function openMobInlineFolder(){
@@ -1410,9 +1477,7 @@ function createMobInlineFolder(){
   const inp=document.getElementById('mob-folder-name-inp');
   const name=inp?.value.trim();
   if(!name){if(inp)inp.style.borderColor='var(--rose)';return;}
-  if(getAllFolders().includes(name)){showToast('⚠','Folder already exists');return;}
-  const stored=JSON.parse(localStorage.getItem('cc_folders')||'[]');
-  stored.push(name);localStorage.setItem('cc_folders',JSON.stringify(stored));
+  if(!addFolder(name,null))return;
   closeMobInlineFolder();
   updateFolderSuggestions(name);
   renderProjects();showToast('▸','Folder "'+name+'" created');
@@ -1459,8 +1524,27 @@ function saveProject(){
 }
 function deleteProject(){
   if(!editingProjectName)return;
-  projects=projects.filter(p=>p.name!==editingProjectName);
-  saveProjects();closeSheet('project-sheet');render();showToast('×','Project deleted');
+  showConfirm('Delete "'+editingProjectName+'"?','Tasks will remain but lose their project.').then(()=>{
+    projects=projects.filter(p=>p.name!==editingProjectName);
+    saveProjects();closeSheet('project-sheet');render();showToast('×','Project deleted');
+  }).catch(()=>{});
+}
+function confirmDeleteProject(name){
+  showConfirm('Delete "'+name+'"?','Tasks will remain but lose their project.').then(()=>{
+    projects=projects.filter(p=>p.name!==name);
+    saveProjects();render();showToast('×','"'+name+'" deleted');
+  }).catch(()=>{});
+}
+function confirmDeleteFolder(folder){
+  const projs=projects.filter(p=>p.folder===folder);
+  const children=getFolderChildren(folder);
+  let msg='';
+  if(projs.length)msg+=projs.length+' project(s) will become ungrouped. ';
+  if(children.length)msg+=children.length+' sub-folder(s) will become top-level. ';
+  if(!msg)msg='This folder is empty.';
+  showConfirm('Delete "'+folder+'"?',msg.trim()).then(()=>{
+    deleteFolder(folder);render();showToast('×','Folder deleted');
+  }).catch(()=>{});
 }
 
 let _pendingDropdownSelect=null;
