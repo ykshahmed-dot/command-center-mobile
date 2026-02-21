@@ -715,7 +715,20 @@ body::before{
     <div class="sheet-body">
       <div class="field-group"><div class="field-label">Project Name *</div><input class="field-input" id="proj-name-inp" placeholder="e.g. Clinisynq"></div>
       <div class="field-group"><div class="field-label">Description</div><input class="field-input" id="proj-desc-inp" placeholder="One-line description…"></div>
-      <div class="field-group"><div class="field-label">Folder <span style="color:var(--text3);font-weight:400;">(optional)</span></div><input class="field-input" id="proj-folder-inp" placeholder="e.g. Work, School…" list="folder-suggestions-m"><datalist id="folder-suggestions-m"></datalist></div>
+      <div class="field-group">
+        <div class="field-label">Folder <span style="color:var(--text3);font-weight:400;">(optional)</span></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select class="field-select" id="proj-folder-inp" style="flex:1;"></select>
+          <div class="btn btn-ghost" onclick="openMobInlineFolder()" style="padding:10px 14px;font-size:13px;white-space:nowrap;flex-shrink:0;">+ New</div>
+        </div>
+        <div id="mob-new-folder-panel" style="display:none;margin-top:10px;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:14px;flex-direction:column;gap:10px;">
+          <input class="field-input" id="mob-folder-name-inp" placeholder="Folder name…">
+          <div style="display:flex;gap:8px;">
+            <div class="btn btn-ghost" onclick="closeMobInlineFolder()" style="flex:none;padding:9px 16px;">Cancel</div>
+            <div class="btn btn-primary" onclick="createMobInlineFolder()" style="flex:1;">Create</div>
+          </div>
+        </div>
+      </div>
       <div style="display:flex;gap:14px;align-items:flex-start;">
         <div><div class="field-label">Icon</div><input class="field-input" id="proj-icon-inp" placeholder="⚡" maxlength="2" style="width:60px;font-size:22px;text-align:center;padding:8px;"></div>
         <div style="flex:1;"><div class="field-label">Color</div><div id="proj-color-picker" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;"></div></div>
@@ -1085,12 +1098,11 @@ function renderSuggestions(){
 
 function quickSchedule(taskId,day){
   const t=tasks.find(x=>x.id===taskId);if(!t)return;
-  const colorMap={Clinisynq:'tb-purple',Research:'tb-green','Medical School':'tb-sky',Personal:'tb-rose'};
   const dayBlocks=timeBlocks.filter(b=>b.day===day).sort((a,b)=>a.start.localeCompare(b.start));
   let startH=8;
   if(dayBlocks.length){const[h,m]=dayBlocks[dayBlocks.length-1].end.split(':').map(Number);startH=h+(m>0?1:0);if(startH<8)startH=8;if(startH>=18)startH=8;}
   const s=`${String(startH).padStart(2,'0')}:00`,e=`${String(Math.min(startH+2,20)).padStart(2,'0')}:00`;
-  timeBlocks.push({id:uid(),label:t.name,day,start:s,end:e,color:colorMap[t.project]||'tb-purple',notes:''});
+  timeBlocks.push({id:uid(),label:t.name,day,start:s,end:e,color:'tb-purple',notes:''});
   activeDay=day;save();switchPage('time',document.getElementById('tab-time'));showToast('◷',`Scheduled ${day} at ${s}`);
 }
 
@@ -1108,25 +1120,26 @@ function renderProjects(){
       <div class="proj-meta"><span>${all.length} tasks</span><span>${pct}% done</span></div>
     </div>`;
   };
-  const folders=[...new Set(projects.map(p=>p.folder||''))].sort((a,b)=>a===''?1:b===''?-1:a.localeCompare(b));
+  const storedFolders=JSON.parse(localStorage.getItem('cc_folders')||'[]');
+  const namedFolders=[...new Set([...storedFolders,...projects.map(p=>p.folder).filter(Boolean)])].sort();
   const folderStates=JSON.parse(localStorage.getItem('cc_folder_states')||'{}');
   let html='';
-  folders.forEach(folder=>{
-    const folderProjs=projects.filter(p=>(p.folder||'')=== folder);
-    if(folder){
-      const collapsed=folderStates[folder]===false;
-      html+=`<div style="margin-bottom:${collapsed?8:16}px;">
-        <div onclick="toggleFolder('${folder}')" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:0 4px;">
-          <span style="font-size:13px;color:var(--text3);transition:transform 0.2s;display:inline-block;transform:rotate(${collapsed?'-90':'0'}deg)">▾</span>
-          <span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--text2);font-weight:500;">${folder}</span>
-          <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);">${folderProjs.length} projects</span>
-        </div>
-        ${collapsed?'':folderProjs.map(makeCard).join('')}
-      </div>`;
-    } else {
-      html+=folderProjs.map(makeCard).join('');
-    }
+  // 1. Named folders
+  namedFolders.forEach(folder=>{
+    const folderProjs=projects.filter(p=>p.folder===folder);
+    const collapsed=folderStates[folder]===false;
+    html+=`<div style="margin-bottom:${collapsed?8:16}px;">
+      <div onclick="toggleFolder('${folder}')" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:0 4px;">
+        <span style="font-size:13px;color:var(--text3);transition:transform 0.2s;display:inline-block;transform:rotate(${collapsed?'-90':'0'}deg)">▾</span>
+        <span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--text2);font-weight:500;">${folder}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:4px;">${folderProjs.length}</span>
+      </div>
+      ${collapsed?'':folderProjs.length?folderProjs.map(makeCard).join(''):'<div style="color:var(--text3);font-size:12px;padding:4px;">No projects yet.</div>'}
+    </div>`;
   });
+  // 2. Always render ungrouped
+  const ungrouped=projects.filter(p=>!p.folder);
+  if(ungrouped.length) html+=ungrouped.map(makeCard).join('');
   html+=`<div class="proj-card" onclick="openAddProject()" style="border:1.5px dashed var(--border);display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text3);min-height:80px;background:transparent;margin-top:8px;">
     <span style="font-size:24px;">+</span><span style="font-size:14px;font-weight:500;">New Project</span>
   </div>`;
@@ -1373,10 +1386,36 @@ function selectProjColor(col){
   document.querySelectorAll('#proj-color-picker div').forEach(s=>{s.style.borderColor=s.style.background===col?'var(--text)':'transparent';});
 }
 function getProjColor(){return _selectedColor||PROJ_COLORS[0];}
-function updateFolderSuggestions(){
-  const folders=[...new Set(projects.map(p=>p.folder||'').filter(Boolean))];
-  const dl=document.getElementById('folder-suggestions-m');
-  if(dl)dl.innerHTML=folders.map(f=>`<option value="${f}">`).join('');
+function getAllFolders(){
+  const stored=JSON.parse(localStorage.getItem('cc_folders')||'[]');
+  const fromProjs=projects.map(p=>p.folder||'').filter(Boolean);
+  return [...new Set([...stored,...fromProjs])];
+}
+function updateFolderSuggestions(selectedFolder){
+  const sel=document.getElementById('proj-folder-inp');
+  if(!sel)return;
+  const folders=getAllFolders();
+  sel.innerHTML='<option value="">— No folder —</option>'+folders.map(f=>`<option value="${f}">${f}</option>`).join('');
+  if(selectedFolder)sel.value=selectedFolder;
+}
+function openMobInlineFolder(){
+  const p=document.getElementById('mob-new-folder-panel');
+  if(p){p.style.display='flex';setTimeout(()=>document.getElementById('mob-folder-name-inp')?.focus(),80);}
+}
+function closeMobInlineFolder(){
+  const p=document.getElementById('mob-new-folder-panel');if(p)p.style.display='none';
+  const i=document.getElementById('mob-folder-name-inp');if(i)i.value='';
+}
+function createMobInlineFolder(){
+  const inp=document.getElementById('mob-folder-name-inp');
+  const name=inp?.value.trim();
+  if(!name){if(inp)inp.style.borderColor='var(--rose)';return;}
+  if(getAllFolders().includes(name)){showToast('⚠','Folder already exists');return;}
+  const stored=JSON.parse(localStorage.getItem('cc_folders')||'[]');
+  stored.push(name);localStorage.setItem('cc_folders',JSON.stringify(stored));
+  closeMobInlineFolder();
+  updateFolderSuggestions(name);
+  renderProjects();showToast('▸','Folder "'+name+'" created');
 }
 function openAddProject(defaultFolder){
   editingProjectName=null;
@@ -1384,10 +1423,9 @@ function openAddProject(defaultFolder){
   document.getElementById('proj-name-inp').value='';
   document.getElementById('proj-desc-inp').value='';
   document.getElementById('proj-icon-inp').value='◆';
-  document.getElementById('proj-folder-inp').value=defaultFolder||'';
   document.getElementById('proj-delete-btn').style.display='none';
   buildColorPicker(PROJ_COLORS[0]);
-  updateFolderSuggestions();
+  updateFolderSuggestions(defaultFolder||'');
   openSheet('project-sheet');
   setTimeout(()=>document.getElementById('proj-name-inp').focus(),300);
 }
@@ -1398,10 +1436,9 @@ function openEditProject(name){
   document.getElementById('proj-name-inp').value=p.name;
   document.getElementById('proj-desc-inp').value=p.desc||'';
   document.getElementById('proj-icon-inp').value=p.icon||'◆';
-  document.getElementById('proj-folder-inp').value=p.folder||'';
   document.getElementById('proj-delete-btn').style.display='';
   buildColorPicker(p.color);
-  updateFolderSuggestions();
+  updateFolderSuggestions(p.folder||'');
   openSheet('project-sheet');
 }
 function saveProject(){
