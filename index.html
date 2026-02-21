@@ -583,7 +583,21 @@ body::before{
     <div class="sheet-body">
       <div class="field-group"><div class="field-label">Task Name *</div><input class="field-input" id="new-name" placeholder="What needs to get done?"></div>
       <div class="field-row">
-        <div><div class="field-label">Project</div><select class="field-select" id="new-project"></select></div>
+        <div>
+          <div class="field-label">Project</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select class="field-select" id="new-project" style="flex:1;"></select>
+            <div class="btn btn-ghost" onclick="openMobQuickProj()" style="padding:10px 14px;font-size:18px;flex-shrink:0;">+</div>
+          </div>
+          <div id="mob-proj-create" style="display:none;margin-top:10px;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:14px;flex-direction:column;gap:10px;">
+            <input class="field-input" id="mob-quick-proj-name" placeholder="Project name…">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;" id="mob-quick-proj-colors"></div>
+            <div style="display:flex;gap:8px;">
+              <div class="btn btn-ghost" onclick="closeMobQuickProj()" style="flex:none;font-size:13px;padding:9px 16px;">Cancel</div>
+              <div class="btn btn-primary" onclick="mobQuickCreateProject()" style="flex:1;font-size:13px;">Create ✦</div>
+            </div>
+          </div>
+        </div>
         <div><div class="field-label">Priority</div><select class="field-select" id="new-priority"><option value="high">🔴 High</option><option value="med">🟡 Medium</option><option value="low">🟢 Low</option></select></div>
       </div>
       <div class="field-row">
@@ -730,6 +744,14 @@ body::before{
         <div class="theme-opt" onclick="setTheme('light',this)">Light</div>
         <div class="theme-opt" onclick="setTheme('warm',this)">Warm</div>
       </div>
+      <div class="field-label" style="margin-bottom:8px;">Notifications</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:13px;color:var(--text2);">Time block reminders (15 min)</span>
+        <button id="notif-toggle-btn" onclick="toggleNotifSettings()" style="font-size:12px;padding:5px 14px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;">On</button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:16px;">Also nudges you about tasks untouched for 3+ days. Requires app to be open.</div>
+      <div class="field-label" style="display:none">_placeholder
+      </div>
       <div class="field-label" style="margin-bottom:8px;">Sync Status</div>
       <div style="font-size:13px;color:var(--text2);margin-bottom:6px;" id="settings-sync-detail">—</div>
       <div class="btn btn-ghost" onclick="manualSync()" style="margin-bottom:4px;">⟳ Sync Now</div>
@@ -765,14 +787,16 @@ function setSyncStatus(s){
 }
 async function pullFromSupabase(){
   if(!supabaseReady)return;
-  const[t,tb,u]=await Promise.all([
+  const[t,tb,u,pr]=await Promise.all([
     sb.from('tasks').select('*').order('created_at',{ascending:true}),
     sb.from('time_blocks').select('*').order('created_at',{ascending:true}),
     sb.from('updates').select('*').order('time',{ascending:false}),
+    sb.from('projects').select('*').order('sort_order',{ascending:true}),
   ]);
-  if(t.data){tasks=t.data.map(fromRow_task);localStorage.setItem('cc_tasks',JSON.stringify(tasks));}
-  if(tb.data){timeBlocks=tb.data.map(fromRow_tb);localStorage.setItem('cc_tb',JSON.stringify(timeBlocks));}
-  if(u.data){updates=u.data.map(fromRow_update);localStorage.setItem('cc_updates',JSON.stringify(updates));}
+  if(t.data&&t.data.length){tasks=t.data.map(fromRow_task);localStorage.setItem('cc_tasks',JSON.stringify(tasks));}
+  if(tb.data&&tb.data.length){timeBlocks=tb.data.map(fromRow_tb);localStorage.setItem('cc_tb',JSON.stringify(timeBlocks));}
+  if(u.data&&u.data.length){updates=u.data.map(fromRow_update);localStorage.setItem('cc_updates',JSON.stringify(updates));}
+  if(pr.data&&pr.data.length){projects=pr.data.map(fromRow_project);localStorage.setItem('cc_projects',JSON.stringify(projects));}
   runMigration();render();
 }
 async function manualSync(){setSyncStatus('syncing');await pullFromSupabase();setSyncStatus('synced');showToast('✦','Synced!');}
@@ -782,6 +806,8 @@ function fromRow_tb(r){return{id:r.id,label:r.label,day:r.day,start:r.start,end:
 function toRow_tb(b){return{id:b.id,label:b.label,day:b.day,start:b.start,"end":b.end,color:b.color,notes:b.notes||''};}
 function fromRow_update(r){return{id:r.id,title:r.title,project:r.project,type:r.type,details:r.details||'',time:r.time};}
 function toRow_update(u){return{id:u.id,title:u.title,project:u.project,type:u.type,details:u.details||'',time:u.time};}
+function fromRow_project(r){return{name:r.name,color:r.color||'#7c6ef5',icon:r.icon||'◆',desc:r.description||'',folder:r.folder||''};}
+function toRow_project(p,i){return{name:p.name,color:p.color,icon:p.icon,description:p.desc||'',folder:p.folder||'',sort_order:i};}
 
 let saveTimer=null;
 const save=()=>{
@@ -797,7 +823,9 @@ async function pushToSupabase(){
       sb.from('tasks').upsert(tasks.map(toRow_task),{onConflict:'id'}),
       sb.from('time_blocks').upsert(timeBlocks.map(toRow_tb),{onConflict:'id'}),
       sb.from('updates').upsert(updates.map(toRow_update),{onConflict:'id'}),
-    ]);setSyncStatus('synced');
+      sb.from('projects').upsert(projects.map((p,i)=>toRow_project(p,i)),{onConflict:'name'}),
+    ]);
+    setSyncStatus('synced');
   }catch(e){console.warn('Push failed:',e);setSyncStatus('offline');}
 }
 async function deleteFromSupabase(table,id){if(supabaseReady)await sb.from(table).delete().eq('id',id);}
@@ -823,7 +851,7 @@ const DEFAULT_PROJECTS=[];
 })();
 
 let projects=JSON.parse(localStorage.getItem('cc_projects')||'null')||DEFAULT_PROJECTS;
-const saveProjects=()=>localStorage.setItem('cc_projects',JSON.stringify(projects));
+const saveProjects=()=>{localStorage.setItem('cc_projects',JSON.stringify(projects));clearTimeout(saveTimer);saveTimer=setTimeout(pushToSupabase,600);};
 const getProj=(name)=>projects.find(p=>p.name===name)||{name,color:'#888',icon:'◆',desc:''};
 const projColorMap=()=>Object.fromEntries(projects.map(p=>[p.name,p.color]));
 const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -859,7 +887,7 @@ document.getElementById('dash-greeting').textContent=`${hr<12?'Good morning':hr<
 document.getElementById('dash-sub').textContent=`${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][now.getDay()]}, ${MONS[now.getMonth()]} ${now.getDate()}`;
 
 // BOOT
-if(SUPABASE_URL!=='https://cygqsjcaopazlnpnfzvv.supabase.co')initSupabase();
+if(SUPABASE_URL!=='YOUR_SUPABASE_URL')initSupabase();
 else setSyncStatus('offline');
 
 // ── STATE ──
@@ -1335,17 +1363,16 @@ function showToast(icon,msg){
 const PROJ_COLORS=['#7c6ef5','#34d399','#fbbf24','#fb7185','#38bdf8','#a78bfa','#e8923a','#f472b6','#22d3ee','#84cc16'];
 let editingProjectName=null;
 
+let _selectedColor=PROJ_COLORS[0];
 function buildColorPicker(selected){
-  document.getElementById('proj-color-picker').innerHTML=PROJ_COLORS.map(col=>`<div style="width:32px;height:32px;border-radius:50%;background:${col};cursor:pointer;border:3px solid ${col===selected?'var(--text)':'transparent'};box-sizing:border-box;transition:all 0.15s;" onclick="selectProjColor('${col}')"></div>`).join('');
+  _selectedColor=selected||PROJ_COLORS[0];
+  document.getElementById('proj-color-picker').innerHTML=PROJ_COLORS.map(col=>`<div style="width:32px;height:32px;border-radius:50%;background:${col};cursor:pointer;border:3px solid ${col===_selectedColor?'var(--text)':'transparent'};box-sizing:border-box;transition:all 0.15s;flex-shrink:0;" onclick="selectProjColor('${col}')"></div>`).join('');
 }
 function selectProjColor(col){
-  document.querySelectorAll('#proj-color-picker div').forEach(s=>{s.style.borderColor=s.style.background===col||s.style.backgroundColor===col?'var(--text)':'transparent';});
+  _selectedColor=col;
+  document.querySelectorAll('#proj-color-picker div').forEach(s=>{s.style.borderColor=s.style.background===col?'var(--text)':'transparent';});
 }
-function getProjColor(){
-  const swatches=document.querySelectorAll('#proj-color-picker div');
-  for(const s of swatches){if(s.style.borderColor==='var(--text)'||s.style.borderColor==='rgb(232, 232, 237)')return s.style.background||s.style.backgroundColor;}
-  return PROJ_COLORS[0];
-}
+function getProjColor(){return _selectedColor||PROJ_COLORS[0];}
 function updateFolderSuggestions(){
   const folders=[...new Set(projects.map(p=>p.folder||'').filter(Boolean))];
   const dl=document.getElementById('folder-suggestions-m');
@@ -1391,7 +1418,7 @@ function saveProject(){
     if(projects.find(x=>x.name===name)){showToast('⚠','Name already exists');return;}
     projects.push(p);
   }
-  saveProjects();save();closeSheet('project-sheet');render();showToast('◎','Project saved');
+  saveProjects();save();closeSheet('project-sheet');render();afterProjectSaved(p.name);showToast('◎','Project saved');
 }
 function deleteProject(){
   if(!editingProjectName)return;
@@ -1399,16 +1426,66 @@ function deleteProject(){
   saveProjects();closeSheet('project-sheet');render();showToast('×','Project deleted');
 }
 
+let _pendingDropdownSelect=null;
+let _quickProjColor=null;
+
 function populateProjectDropdowns(selectedVal){
-  const ids=['new-project','upd-project','det-project'];
-  ids.forEach(id=>{
+  const opts=()=>projects.map(p=>`<option value="${p.name}">${p.icon} ${p.name}</option>`).join('');
+
+  // new-project: inline create panel
+  const inlineEl=document.getElementById('new-project');
+  if(inlineEl){
+    inlineEl.innerHTML=opts()||'<option value="" disabled>No projects yet</option>';
+    if(selectedVal)inlineEl.value=selectedVal;
+  }
+
+  // other selects: open project sheet
+  ['upd-project','det-project'].forEach(id=>{
     const el=document.getElementById(id);if(!el)return;
-    el.innerHTML=projects.map(p=>`<option value="${p.name}">${p.icon} ${p.name}</option>`).join('')+`<option value="__new__">+ New Project…</option>`;
+    el.innerHTML=(opts()||'<option value="" disabled>No projects yet</option>')+`<option value="__new__">+ New Project…</option>`;
     if(selectedVal&&selectedVal!=='__new__')el.value=selectedVal;
-    el.onchange=function(){if(this.value==='__new__'){this.value=selectedVal||projects[0]?.name||'';openAddProject();}};
+    el.onchange=function(){if(this.value==='__new__'){this.value=projects[0]?.name||'';openAddProject();}};
   });
 }
 
+function openMobQuickProj(){
+  _quickProjColor=PROJ_COLORS[0];
+  buildMobQuickColors();
+  const panel=document.getElementById('mob-proj-create');
+  if(panel){panel.style.display='flex';setTimeout(()=>document.getElementById('mob-quick-proj-name')?.focus(),80);}
+}
+
+function buildMobQuickColors(){
+  const qpc=document.getElementById('mob-quick-proj-colors');
+  if(!qpc)return;
+  if(!_quickProjColor)_quickProjColor=PROJ_COLORS[0];
+  qpc.innerHTML=PROJ_COLORS.map(c=>`<div data-c="${c}" onclick="pickMobColor('${c}')" style="width:30px;height:30px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${c===_quickProjColor?'white':'transparent'};box-sizing:border-box;transition:border-color 0.12s;flex-shrink:0;"></div>`).join('');
+}
+
+function pickMobColor(c){
+  _quickProjColor=c;
+  document.querySelectorAll('#mob-quick-proj-colors div').forEach(d=>{d.style.borderColor=d.dataset.c===c?'white':'transparent';});
+}
+
+function mobQuickCreateProject(){
+  const inp=document.getElementById('mob-quick-proj-name');
+  const name=inp?.value.trim();
+  if(!name){if(inp){inp.style.borderColor='var(--rose)';inp.focus();}return;}
+  if(projects.find(p=>p.name===name)){showToast('⚠','Name already exists');return;}
+  const p={name,color:_quickProjColor||PROJ_COLORS[0],icon:'◆',desc:'',folder:''};
+  projects.push(p);saveProjects();
+  closeMobQuickProj();
+  populateProjectDropdowns(name);
+  const sel=document.getElementById('new-project');if(sel)sel.value=name;
+  render();showToast('◎','Project "'+name+'" created');
+}
+
+function closeMobQuickProj(){
+  const panel=document.getElementById('mob-proj-create');if(panel)panel.style.display='none';
+  const inp=document.getElementById('mob-quick-proj-name');if(inp){inp.value='';inp.style.borderColor='';}
+}
+
+function afterProjectSaved(name){populateProjectDropdowns(name);}
 function filterAndGoTasks(proj){
   taskFilter='all';taskSearch='';
   document.getElementById('task-search').value='';
@@ -1418,7 +1495,91 @@ function filterAndGoTasks(proj){
   document.getElementById('all-tasks').innerHTML=[...tasks].filter(t=>t.project===proj).sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]).map(taskRowHTML).join('');
 }
 
+// ── NOTIFICATIONS ──
+const NOTIF_SETTINGS_KEY='cc_notif_settings';
+function getNotifSettings(){return JSON.parse(localStorage.getItem(NOTIF_SETTINGS_KEY)||'{"timeblocks":true,"stale":true,"staleDays":3}');}
+function saveNotifSettings(s){localStorage.setItem(NOTIF_SETTINGS_KEY,JSON.stringify(s));}
+
+async function requestNotifPermission(){
+  if(!('Notification' in window))return false;
+  if(Notification.permission==='granted')return true;
+  if(Notification.permission==='denied')return false;
+  const res=await Notification.requestPermission();
+  return res==='granted';
+}
+
+function fireNotif(title,body,tag){
+  if(Notification.permission!=='granted')return;
+  const n=new Notification(title,{body,tag,icon:'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%237c6ef5%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22>⚡</text></svg>'});
+  n.onclick=()=>{window.focus();n.close();};
+}
+
+let _scheduledNotifs=[];
+function clearScheduledNotifs(){_scheduledNotifs.forEach(t=>clearTimeout(t));_scheduledNotifs=[];}
+
+function scheduleTimeBlockNotifs(){
+  clearScheduledNotifs();
+  const s=getNotifSettings();
+  if(!s.timeblocks||Notification.permission!=='granted')return;
+  const todayKey=DAYS[new Date().getDay()];
+  const nowD=new Date();
+  timeBlocks.filter(b=>b.day===todayKey).forEach(b=>{
+    const[h,m]=b.start.split(':').map(Number);
+    const blockTime=new Date();blockTime.setHours(h,m,0,0);
+    const alertTime=new Date(blockTime.getTime()-15*60*1000);
+    const msUntil=alertTime-nowD;
+    if(msUntil>0&&msUntil<12*60*60*1000){
+      _scheduledNotifs.push(setTimeout(()=>fireNotif('⏰ Starting soon','"'+b.label+'" starts at '+b.start,'tb-'+b.id),msUntil));
+    }
+  });
+}
+
+function checkStaleTaskNotifs(){
+  const s=getNotifSettings();
+  if(!s.stale||Notification.permission!=='granted')return;
+  const days=s.staleDays||3;
+  const cutoff=new Date();cutoff.setDate(cutoff.getDate()-days);
+  const stale=tasks.filter(t=>{
+    if(t.status==='done')return false;
+    const updates=t.taskUpdates||[];
+    if(!updates.length)return true;
+    return new Date(updates[updates.length-1].time||0)<cutoff;
+  }).slice(0,5);
+  if(!stale.length)return;
+  if(stale.length===1){
+    fireNotif('📌 Task needs attention','"'+stale[0].name+'" hasn\'t been updated in '+days+'+ days','stale-single');
+  } else {
+    fireNotif('📌 '+stale.length+' tasks need attention',stale.map(t=>'• '+t.name).join('\n'),'stale-multi');
+  }
+}
+
+async function initNotifications(){
+  const granted=await requestNotifPermission();
+  if(!granted)return;
+  scheduleTimeBlockNotifs();
+  checkStaleTaskNotifs();
+}
+
+function toggleNotifSettings(){
+  const s=getNotifSettings();
+  const allOn=s.timeblocks&&s.stale;
+  s.timeblocks=!allOn;s.stale=!allOn;
+  saveNotifSettings(s);
+  updateNotifBtn();
+  if(s.timeblocks||s.stale)initNotifications();
+}
+function updateNotifBtn(){
+  const btn=document.getElementById('notif-toggle-btn');if(!btn)return;
+  const s=getNotifSettings();
+  const on=s.timeblocks||s.stale;
+  btn.textContent='Notifs: '+(Notification.permission==='denied'?'Blocked':on?'On':'Off');
+}
+
 render();
+initNotifications();updateNotifBtn();
+// Wire Enter on mob quick proj name
+const _mqpn=document.getElementById('mob-quick-proj-name');
+if(_mqpn)_mqpn.addEventListener('keydown',e=>{if(e.key==='Enter')mobQuickCreateProject();});
 </script>
 </body>
 </html>
