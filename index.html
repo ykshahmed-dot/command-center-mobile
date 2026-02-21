@@ -491,12 +491,7 @@ body::before{
       </div>
       <div>
         <div class="field-label">Project</div>
-        <select class="field-select" id="det-project" onchange="saveDetProject()">
-          <option value="Clinisynq">Clinisynq</option>
-          <option value="Research">Research</option>
-          <option value="Medical School">Med School</option>
-          <option value="Personal">Personal</option>
-        </select>
+        <select class="field-select" id="det-project" onchange="saveDetProject()"></select>
       </div>
     </div>
 
@@ -588,7 +583,7 @@ body::before{
     <div class="sheet-body">
       <div class="field-group"><div class="field-label">Task Name *</div><input class="field-input" id="new-name" placeholder="What needs to get done?"></div>
       <div class="field-row">
-        <div><div class="field-label">Project</div><select class="field-select" id="new-project"><option>Clinisynq</option><option>Research</option><option>Medical School</option><option>Personal</option></select></div>
+        <div><div class="field-label">Project</div><select class="field-select" id="new-project"></select></div>
         <div><div class="field-label">Priority</div><select class="field-select" id="new-priority"><option value="high">🔴 High</option><option value="med">🟡 Medium</option><option value="low">🟢 Low</option></select></div>
       </div>
       <div class="field-row">
@@ -642,7 +637,7 @@ body::before{
     <div class="sheet-body">
       <div class="field-group"><div class="field-label">Title *</div><input class="field-input" id="upd-title" placeholder="e.g. Pushed MVP draft to GitHub"></div>
       <div class="field-row">
-        <div><div class="field-label">Project</div><select class="field-select" id="upd-project"><option>Clinisynq</option><option>Research</option><option>Medical School</option><option>Personal</option></select></div>
+        <div><div class="field-label">Project</div><select class="field-select" id="upd-project"></select></div>
         <div><div class="field-label">Type</div><select class="field-select" id="upd-type"><option value="progress">Progress</option><option value="milestone">Milestone 🎉</option><option value="blocker">Blocker 🚧</option><option value="note">Note</option></select></div>
       </div>
       <div class="field-group"><div class="field-label">Details</div><textarea class="field-textarea" id="upd-details" placeholder="What happened, what's next…"></textarea></div>
@@ -691,6 +686,31 @@ body::before{
       <div class="btn btn-ghost" onclick="deleteEditingBlock()" style="color:var(--rose);flex:none;padding:12px 16px;">× Delete</div>
       <div class="btn btn-ghost" onclick="closeSheet('edit-tb-sheet')" style="flex:none;padding:12px 16px;">Cancel</div>
       <div class="btn btn-primary" onclick="saveEditBlock()">Save ◇</div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT PROJECT SHEET -->
+<div class="sheet-overlay" id="project-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title" id="proj-sheet-title">◎ New Project</div>
+      <div class="sheet-close" onclick="closeSheet('project-sheet')">×</div>
+    </div>
+    <div class="sheet-body">
+      <div class="field-group"><div class="field-label">Project Name *</div><input class="field-input" id="proj-name-inp" placeholder="e.g. Clinisynq"></div>
+      <div class="field-group"><div class="field-label">Description</div><input class="field-input" id="proj-desc-inp" placeholder="One-line description…"></div>
+      <div class="field-group"><div class="field-label">Folder <span style="color:var(--text3);font-weight:400;">(optional)</span></div><input class="field-input" id="proj-folder-inp" placeholder="e.g. Work, School…" list="folder-suggestions-m"><datalist id="folder-suggestions-m"></datalist></div>
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div><div class="field-label">Icon</div><input class="field-input" id="proj-icon-inp" placeholder="⚡" maxlength="2" style="width:60px;font-size:22px;text-align:center;padding:8px;"></div>
+        <div style="flex:1;"><div class="field-label">Color</div><div id="proj-color-picker" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;"></div></div>
+      </div>
+    </div>
+    <div class="sheet-footer" style="flex-wrap:wrap;gap:8px;">
+      <div class="btn btn-ghost" id="proj-delete-btn" onclick="deleteProject()" style="color:var(--rose);display:none;flex:none;">Delete</div>
+      <div class="btn btn-ghost" onclick="closeSheet('project-sheet')" style="flex:none;">Cancel</div>
+      <div class="btn btn-primary" onclick="saveProject()">Save Project</div>
     </div>
   </div>
 </div>
@@ -789,6 +809,23 @@ let updates=JSON.parse(localStorage.getItem('cc_updates')||'[]');
 let currentTheme=localStorage.getItem('cc_theme')||'dark';
 
 const uid=()=>Math.random().toString(36).slice(2,10);
+
+// Dynamic project registry
+const DEFAULT_PROJECTS=[];
+
+// ── CLEAR ALL DATA ON FIRST RUN ──
+(function(){
+  const VERSION='v3-clean';
+  if(localStorage.getItem('cc_version')!==VERSION){
+    ['cc_tasks','cc_tb','cc_updates','cc_projects','cc_folders','cc_folder_states'].forEach(k=>localStorage.removeItem(k));
+    localStorage.setItem('cc_version',VERSION);
+  }
+})();
+
+let projects=JSON.parse(localStorage.getItem('cc_projects')||'null')||DEFAULT_PROJECTS;
+const saveProjects=()=>localStorage.setItem('cc_projects',JSON.stringify(projects));
+const getProj=(name)=>projects.find(p=>p.name===name)||{name,color:'#888',icon:'◆',desc:''};
+const projColorMap=()=>Object.fromEntries(projects.map(p=>[p.name,p.color]));
 const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const now=new Date();
@@ -803,31 +840,7 @@ function runMigration(){
 }
 
 // SEED
-if(!tasks.length){
-  tasks=[
-    {id:uid(),name:'Finalize Clinisynq pitch deck for BioNJ',project:'Clinisynq',priority:'high',status:'inprog',due:todayStr(2),desc:'Health IT category positioning.',notes:'',taskUpdates:[],subtasks:[]},
-    {id:uid(),name:'SBP predictive model — feature engineering',project:'Research',priority:'high',status:'inprog',due:todayStr(5),desc:'Logistic regression + AUROC.',notes:'',taskUpdates:[],subtasks:[]},
-    {id:uid(),name:'DDW abstract — female authorship study',project:'Research',priority:'high',status:'todo',due:todayStr(3),desc:'Format per DDW guidelines.',notes:'',taskUpdates:[],subtasks:[]},
-    {id:uid(),name:'Review contractor agreement',project:'Clinisynq',priority:'med',status:'todo',due:todayStr(1),desc:'Check IP assignment clauses.',notes:'',taskUpdates:[],subtasks:[]},
-    {id:uid(),name:'GI distribution manuscript — methods section',project:'Research',priority:'med',status:'inprog',due:todayStr(7),desc:'Geographic disparities analysis.',notes:'',taskUpdates:[],subtasks:[]},
-    {id:uid(),name:'Step 3 registration',project:'Medical School',priority:'med',status:'todo',due:todayStr(14),desc:'',notes:'',taskUpdates:[],subtasks:[]},
-  ];
-}
-if(!timeBlocks.length){
-  const td=DAYS[now.getDay()];
-  timeBlocks=[
-    {id:uid(),label:'Deep Work — Clinisynq Pitch',day:td,start:'07:00',end:'09:00',color:'tb-purple',notes:''},
-    {id:uid(),label:'Research Block — SBP Model',day:td,start:'10:00',end:'12:00',color:'tb-green',notes:''},
-    {id:uid(),label:'Admin + Emails',day:td,start:'13:00',end:'14:00',color:'tb-amber',notes:''},
-  ];
-}
-if(!updates.length){
-  const rt=d=>{const x=new Date(now);x.setDate(x.getDate()-d);return x.toISOString();};
-  updates=[
-    {id:uid(),title:'BioNJ pitch application submitted',project:'Clinisynq',type:'milestone',details:'Submitted to Health IT.',time:rt(1)},
-    {id:uid(),title:'SBP model data cleaning complete',project:'Research',type:'progress',details:'Cohort cleaned and ready.',time:rt(2)},
-  ];
-}
+// No seed data — start fresh
 save();runMigration();
 
 // THEME
@@ -872,8 +885,8 @@ function updateFab(){
 }
 function fabAction(){
   if(currentPage==='time')openSheet('add-tb-sheet');
-  else if(currentPage==='updates')openSheet('add-update-sheet');
-  else openSheet('add-task-sheet');
+  else if(currentPage==='updates')openAddUpdateSheet();
+  else openAddTaskSheet();
 }
 
 // ── RENDER ──
@@ -884,7 +897,7 @@ function render(){
 }
 
 const priOrder={high:0,med:1,low:2};
-const projColor={Clinisynq:'#7c6ef5',Research:'#34d399','Medical School':'#fbbf24',Personal:'#fb7185'};
+// projColor now dynamic via projColorMap()
 const priClass={high:'priority-high',med:'priority-med',low:'priority-low'};
 
 function renderStats(){
@@ -910,7 +923,7 @@ function taskRowHTML(t){
       <div class="task-name ${isDone?'done':''}">${t.name}</div>
       <div class="task-meta">
         <span class="tag ${priClass[t.priority]}">${t.priority}</span>
-        <span class="proj-tag" style="background:${projColor[t.project]}22;color:${projColor[t.project]}">${t.project}</span>
+        <span class="proj-tag" style="background:${projColorMap()[t.project]}22;color:${projColorMap()[t.project]}">${t.project}</span>
       </div>
       ${subTotal>0?`<div class="subtask-mini"><div class="subtask-mini-bar"><div class="subtask-mini-fill" style="width:${pct}%"></div></div><span class="subtask-mini-label">${subOpen} left</span></div>`:''}
     </div>
@@ -933,10 +946,30 @@ function renderDashUpdates(){
 }
 function renderAllTasks(){
   let list=[...tasks];
-  if(taskFilter!=='all')list=list.filter(t=>t.status===taskFilter);
   if(taskSearch)list=list.filter(t=>t.name.toLowerCase().includes(taskSearch.toLowerCase()));
-  list.sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]);
-  document.getElementById('all-tasks').innerHTML=list.length?list.map(taskRowHTML).join(''):`<div class="empty"><div class="empty-icon">✦</div>No tasks. Tap + to add one.</div>`;
+  if(taskFilter!=='all'){
+    list=list.filter(t=>t.status===taskFilter).sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]);
+    document.getElementById('all-tasks').innerHTML=list.length?list.map(taskRowHTML).join(''):`<div class="empty"><div class="empty-icon">✦</div>No tasks found.</div>`;
+    return;
+  }
+  const groups=[
+    {key:'inprog',label:'In Progress',icon:'●',color:'var(--accent)'},
+    {key:'todo',label:'To Do',icon:'□',color:'var(--text2)'},
+    {key:'blocked',label:'Blocked',icon:'⚠',color:'var(--rose)'},
+    {key:'done',label:'Done',icon:'✓',color:'var(--green)'},
+  ];
+  let html='';
+  groups.forEach(g=>{
+    const items=list.filter(t=>t.status===g.key).sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]);
+    if(!items.length)return;
+    html+=`<div style="padding:10px 16px 4px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border);background:var(--surface2);">
+      <span style="color:${g.color};font-size:11px;">${g.icon}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);">${g.label}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${items.length}</span>
+    </div>`;
+    html+=items.map(taskRowHTML).join('');
+  });
+  document.getElementById('all-tasks').innerHTML=html||`<div class="empty"><div class="empty-icon">✦</div>No tasks. Tap + to add one.</div>`;
 }
 function filterTasks(f,el){
   taskFilter=f;
@@ -1008,7 +1041,7 @@ function renderSuggestions(){
     return cands.sort((a,b)=>a.n-b.n).slice(0,3).map(c=>c.key);
   };
   el.innerHTML=scored.map(t=>{
-    const top=t.reasons[0],c=projColor[t.project]||'var(--accent)';
+    const top=t.reasons[0],c=projColorMap()[t.project]||'var(--accent)';
     const days=sugDays(t);
     return `<div class="sug-card" onclick="openDetail('${t.id}')">
       <div class="sug-stripe" style="background:${c}"></div>
@@ -1034,24 +1067,50 @@ function quickSchedule(taskId,day){
 }
 
 function renderProjects(){
-  const projs={Clinisynq:{icon:'⚡',desc:'Clinical research tech platform for investigator-initiated trials.'},Research:{icon:'🔬',desc:'GI outcomes research, publications, and conference submissions.'},'Medical School':{icon:'🩺',desc:'Curriculum, boards, and clinical training milestones.'},Personal:{icon:'✦',desc:'Personal goals and miscellaneous.'}};
-  document.getElementById('projects-list').innerHTML=Object.entries(projs).map(([p,m])=>{
-    const all=tasks.filter(t=>t.project===p),done=all.filter(t=>t.status==='done').length,pct=all.length>0?Math.round(done/all.length*100):0,c=projColor[p];
-    return `<div class="proj-card" onclick="filterAndGoTasks('${p}')">
-      <div class="proj-card-top"><span class="proj-icon">${m.icon}</span><span class="proj-name" style="color:${c}">${p}</span></div>
-      <div class="proj-desc">${m.desc}</div>
-      <div class="proj-bar"><div class="proj-bar-fill" style="width:${pct}%;background:${c}"></div></div>
+  const makeCard=p=>{
+    const all=tasks.filter(t=>t.project===p.name),done=all.filter(t=>t.status==='done').length,pct=all.length>0?Math.round(done/all.length*100):0;
+    return `<div class="proj-card" onclick="filterAndGoTasks('${p.name}')">
+      <div class="proj-card-top">
+        <span class="proj-icon">${p.icon}</span>
+        <span class="proj-name" style="color:${p.color}">${p.name}</span>
+        <span onclick="event.stopPropagation();openEditProject('${p.name}')" style="margin-left:auto;color:var(--text3);font-size:16px;cursor:pointer;">✎</span>
+      </div>
+      <div class="proj-desc">${p.desc||'No description.'}</div>
+      <div class="proj-bar"><div class="proj-bar-fill" style="width:${pct}%;background:${p.color}"></div></div>
       <div class="proj-meta"><span>${all.length} tasks</span><span>${pct}% done</span></div>
     </div>`;
-  }).join('');
+  };
+  const folders=[...new Set(projects.map(p=>p.folder||''))].sort((a,b)=>a===''?1:b===''?-1:a.localeCompare(b));
+  const folderStates=JSON.parse(localStorage.getItem('cc_folder_states')||'{}');
+  let html='';
+  folders.forEach(folder=>{
+    const folderProjs=projects.filter(p=>(p.folder||'')=== folder);
+    if(folder){
+      const collapsed=folderStates[folder]===false;
+      html+=`<div style="margin-bottom:${collapsed?8:16}px;">
+        <div onclick="toggleFolder('${folder}')" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:0 4px;">
+          <span style="font-size:13px;color:var(--text3);transition:transform 0.2s;display:inline-block;transform:rotate(${collapsed?'-90':'0'}deg)">▾</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--text2);font-weight:500;">${folder}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);">${folderProjs.length} projects</span>
+        </div>
+        ${collapsed?'':folderProjs.map(makeCard).join('')}
+      </div>`;
+    } else {
+      html+=folderProjs.map(makeCard).join('');
+    }
+  });
+  html+=`<div class="proj-card" onclick="openAddProject()" style="border:1.5px dashed var(--border);display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text3);min-height:80px;background:transparent;margin-top:8px;">
+    <span style="font-size:24px;">+</span><span style="font-size:14px;font-weight:500;">New Project</span>
+  </div>`;
+  document.getElementById('projects-list').innerHTML=html;
 }
-function filterAndGoTasks(proj){
-  taskFilter='all';taskSearch='';
-  document.getElementById('task-search').value='';
-  document.querySelectorAll('#task-filters .filter-pill').forEach((p,i)=>{p.classList.toggle('active',i===0);});
-  switchPage('tasks',document.getElementById('tab-tasks'));
-  document.getElementById('all-tasks').innerHTML=[...tasks].filter(t=>t.project===proj).sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]).map(taskRowHTML).join('');
+function toggleFolder(name){
+  const s=JSON.parse(localStorage.getItem('cc_folder_states')||'{}');
+  s[name]=s[name]===false?true:false;
+  localStorage.setItem('cc_folder_states',JSON.stringify(s));
+  renderProjects();
 }
+// filterAndGoTasks moved to project management section
 
 function updateRowHTML(u){
   const tc={progress:'var(--accent)',milestone:'var(--green)',blocker:'var(--rose)',note:'var(--text3)'};
@@ -1062,7 +1121,7 @@ function updateRowHTML(u){
       ${u.details?`<div class="update-text">${u.details}</div>`:''}
       <div class="update-meta">
         <span class="update-time">${timeAgo(u.time)}</span>
-        <span class="proj-tag" style="background:${projColor[u.project]||'#888'}22;color:${projColor[u.project]||'#888'}">${u.project}</span>
+        <span class="proj-tag" style="background:${projColorMap()[u.project]||'#888'}22;color:${projColorMap()[u.project]||'#888'}">${u.project}</span>
       </div>
     </div>
   </div>`;
@@ -1078,6 +1137,7 @@ function openDetail(id){
   document.getElementById('det-name').value=t.name;
   document.getElementById('detail-nav-title').textContent=t.name;
   document.getElementById('det-priority').value=t.priority;
+  populateProjectDropdowns(t.project);
   document.getElementById('det-project').value=t.project;
   document.getElementById('det-due').value=t.due||'';
   document.getElementById('det-due-clear').style.opacity=t.due?'1':'0.4';
@@ -1177,6 +1237,8 @@ function openSheet(id){document.getElementById(id).classList.add('open');}
 function closeSheet(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.sheet-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 function openSettings(){openSheet('settings-sheet');}
+function openAddTaskSheet(){populateProjectDropdowns();openSheet('add-task-sheet');setTimeout(()=>document.getElementById('new-name').focus(),300);}
+function openAddUpdateSheet(){populateProjectDropdowns();openSheet('add-update-sheet');setTimeout(()=>document.getElementById('upd-title').focus(),300);}
 
 function saveNewTask(){
   const name=document.getElementById('new-name').value.trim();
@@ -1267,6 +1329,93 @@ function showToast(icon,msg){
   const t=document.getElementById('toast');
   document.getElementById('toast-icon').textContent=icon;document.getElementById('toast-msg').textContent=msg;
   t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ── PROJECT MANAGEMENT ──
+const PROJ_COLORS=['#7c6ef5','#34d399','#fbbf24','#fb7185','#38bdf8','#a78bfa','#e8923a','#f472b6','#22d3ee','#84cc16'];
+let editingProjectName=null;
+
+function buildColorPicker(selected){
+  document.getElementById('proj-color-picker').innerHTML=PROJ_COLORS.map(col=>`<div style="width:32px;height:32px;border-radius:50%;background:${col};cursor:pointer;border:3px solid ${col===selected?'var(--text)':'transparent'};box-sizing:border-box;transition:all 0.15s;" onclick="selectProjColor('${col}')"></div>`).join('');
+}
+function selectProjColor(col){
+  document.querySelectorAll('#proj-color-picker div').forEach(s=>{s.style.borderColor=s.style.background===col||s.style.backgroundColor===col?'var(--text)':'transparent';});
+}
+function getProjColor(){
+  const swatches=document.querySelectorAll('#proj-color-picker div');
+  for(const s of swatches){if(s.style.borderColor==='var(--text)'||s.style.borderColor==='rgb(232, 232, 237)')return s.style.background||s.style.backgroundColor;}
+  return PROJ_COLORS[0];
+}
+function updateFolderSuggestions(){
+  const folders=[...new Set(projects.map(p=>p.folder||'').filter(Boolean))];
+  const dl=document.getElementById('folder-suggestions-m');
+  if(dl)dl.innerHTML=folders.map(f=>`<option value="${f}">`).join('');
+}
+function openAddProject(defaultFolder){
+  editingProjectName=null;
+  document.getElementById('proj-sheet-title').textContent='◎ New Project';
+  document.getElementById('proj-name-inp').value='';
+  document.getElementById('proj-desc-inp').value='';
+  document.getElementById('proj-icon-inp').value='◆';
+  document.getElementById('proj-folder-inp').value=defaultFolder||'';
+  document.getElementById('proj-delete-btn').style.display='none';
+  buildColorPicker(PROJ_COLORS[0]);
+  updateFolderSuggestions();
+  openSheet('project-sheet');
+  setTimeout(()=>document.getElementById('proj-name-inp').focus(),300);
+}
+function openEditProject(name){
+  const p=getProj(name);if(!p)return;
+  editingProjectName=name;
+  document.getElementById('proj-sheet-title').textContent='✎ Edit Project';
+  document.getElementById('proj-name-inp').value=p.name;
+  document.getElementById('proj-desc-inp').value=p.desc||'';
+  document.getElementById('proj-icon-inp').value=p.icon||'◆';
+  document.getElementById('proj-folder-inp').value=p.folder||'';
+  document.getElementById('proj-delete-btn').style.display='';
+  buildColorPicker(p.color);
+  updateFolderSuggestions();
+  openSheet('project-sheet');
+}
+function saveProject(){
+  const name=document.getElementById('proj-name-inp').value.trim();
+  if(!name){document.getElementById('proj-name-inp').style.borderColor='var(--rose)';return;}
+  const p={name,desc:document.getElementById('proj-desc-inp').value.trim(),icon:document.getElementById('proj-icon-inp').value.trim()||'◆',color:getProjColor(),folder:document.getElementById('proj-folder-inp').value.trim()};
+  if(editingProjectName){
+    const idx=projects.findIndex(x=>x.name===editingProjectName);
+    if(idx>=0){
+      if(editingProjectName!==name)tasks=tasks.map(t=>t.project===editingProjectName?{...t,project:name}:t);
+      projects[idx]=p;
+    }
+  } else {
+    if(projects.find(x=>x.name===name)){showToast('⚠','Name already exists');return;}
+    projects.push(p);
+  }
+  saveProjects();save();closeSheet('project-sheet');render();showToast('◎','Project saved');
+}
+function deleteProject(){
+  if(!editingProjectName)return;
+  projects=projects.filter(p=>p.name!==editingProjectName);
+  saveProjects();closeSheet('project-sheet');render();showToast('×','Project deleted');
+}
+
+function populateProjectDropdowns(selectedVal){
+  const ids=['new-project','upd-project','det-project'];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.innerHTML=projects.map(p=>`<option value="${p.name}">${p.icon} ${p.name}</option>`).join('')+`<option value="__new__">+ New Project…</option>`;
+    if(selectedVal&&selectedVal!=='__new__')el.value=selectedVal;
+    el.onchange=function(){if(this.value==='__new__'){this.value=selectedVal||projects[0]?.name||'';openAddProject();}};
+  });
+}
+
+function filterAndGoTasks(proj){
+  taskFilter='all';taskSearch='';
+  document.getElementById('task-search').value='';
+  document.querySelectorAll('#task-filters .filter-pill').forEach((p,i)=>{p.classList.toggle('active',i===0);});
+  switchPage('tasks',document.getElementById('tab-tasks'));
+  const pc=projColorMap();
+  document.getElementById('all-tasks').innerHTML=[...tasks].filter(t=>t.project===proj).sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]).map(taskRowHTML).join('');
 }
 
 render();
