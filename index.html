@@ -289,6 +289,8 @@ body::before{
   transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);
 }
 .sheet-overlay.open .sheet{transform:translateY(0);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
 .sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border2);margin:12px auto 0;}
 .sheet-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;}
 .sheet-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
@@ -703,7 +705,7 @@ body::before{
 </div>
 
 <!-- CONFIRM MODAL -->
-<div class="modal-overlay" id="confirm-modal" style="z-index:1000;">
+<div class="modal-overlay" id="confirm-modal" style="z-index:1000;display:none;">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px;max-width:320px;width:90%;margin:auto;">
     <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:10px;" id="confirm-title">Confirm</div>
     <p id="confirm-msg" style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px;"></p>
