@@ -566,13 +566,7 @@ body::before{
     <!-- SCHEDULE BLOCK -->
     <div class="field-label">Schedule a Time Block</div>
     <div class="field-row" style="margin-bottom:10px;">
-      <div>
-        <div class="field-label" style="font-size:8.5px;">Day</div>
-        <select class="field-select" id="det-tb-day" style="padding:10px 12px;font-size:13px;">
-          <option value="Mon">Monday</option><option value="Tue">Tuesday</option><option value="Wed">Wednesday</option>
-          <option value="Thu">Thursday</option><option value="Fri">Friday</option><option value="Sat">Saturday</option><option value="Sun">Sunday</option>
-        </select>
-      </div>
+      <div><div class="field-label" style="font-size:8.5px;">Date</div><input class="field-input" type="date" id="det-tb-day" style="padding:10px 12px;font-size:13px;"></div>
       <div>
         <div class="field-label" style="font-size:8.5px;">Category</div>
         <select class="field-select" id="det-tb-color" style="padding:10px 12px;font-size:13px;">
@@ -665,7 +659,7 @@ body::before{
     <div class="sheet-body">
       <div class="field-group"><div class="field-label">Label *</div><input class="field-input" id="tb-label" placeholder="e.g. Deep Work — Clinisynq"></div>
       <div class="field-row">
-        <div><div class="field-label">Day</div><select class="field-select" id="tb-day"><option value="Mon">Monday</option><option value="Tue">Tuesday</option><option value="Wed">Wednesday</option><option value="Thu">Thursday</option><option value="Fri">Friday</option><option value="Sat">Saturday</option><option value="Sun">Sunday</option></select></div>
+        <div><div class="field-label">Date</div><input class="field-input" type="date" id="tb-day"></div>
         <div><div class="field-label">Category</div><select class="field-select" id="tb-color"><option value="tb-purple">⬤ Focus</option><option value="tb-green">⬤ Research</option><option value="tb-amber">⬤ Admin</option><option value="tb-sky">⬤ Med School</option><option value="tb-rose">⬤ Urgent</option></select></div>
       </div>
       <div class="field-row">
@@ -727,12 +721,7 @@ body::before{
     <div class="sheet-body">
       <div class="field-group"><div class="field-label">Label *</div><input class="field-input" id="etb-label" placeholder="Block label"></div>
       <div class="field-row">
-        <div><div class="field-label">Day</div>
-          <select class="field-select" id="etb-day">
-            <option value="Mon">Monday</option><option value="Tue">Tuesday</option><option value="Wed">Wednesday</option>
-            <option value="Thu">Thursday</option><option value="Fri">Friday</option><option value="Sat">Saturday</option><option value="Sun">Sunday</option>
-          </select>
-        </div>
+        <div><div class="field-label">Date</div><input class="field-input" type="date" id="etb-day"></div>
         <div><div class="field-label">Category</div>
           <select class="field-select" id="etb-color">
             <option value="tb-purple">⬤ Focus</option><option value="tb-green">⬤ Research</option>
@@ -977,6 +966,21 @@ function runMigration(){
     if(!t.subtasks)t.subtasks=[];
     t.taskUpdates=t.taskUpdates.map(u=>typeof u==='string'?{text:u,time:mt}:(u.time==null?{...u,time:mt}:u));
   });
+  // Migrate time blocks from day-names (Mon/Tue...) to ISO dates
+  const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let migrated=false;
+  timeBlocks.forEach(b=>{
+    if(b.day&&dayNames.includes(b.day)){
+      const target=dayNames.indexOf(b.day);
+      const d=new Date(now);
+      let offset=d.getDay()-target;
+      if(offset<0)offset+=7;
+      d.setDate(d.getDate()-offset);
+      b.day=d.toISOString().split('T')[0];
+      migrated=true;
+    }
+  });
+  if(migrated){save();pushToSupabase();}
 }
 
 // THEME
@@ -999,7 +1003,7 @@ initSupabase();
 
 // ── STATE ──
 let currentPage='dashboard',taskFilter='all',taskSearch='',weekOffset=0;
-let activeDay=DAYS[now.getDay()===0?1:now.getDay()];
+let activeDay=now.toISOString().split('T')[0];
 let drawerTaskId=null;
 
 // ── NAVIGATION ──
@@ -1019,7 +1023,7 @@ function updateFab(){
   fab.textContent=labels[currentPage]||'＋';
 }
 function fabAction(){
-  if(currentPage==='time')openSheet('add-tb-sheet');
+  if(currentPage==='time')openAddTbSheet();
   else if(currentPage==='updates')openAddUpdateSheet();
   else openAddTaskSheet();
 }
@@ -1068,13 +1072,13 @@ function taskRowHTML(t){
 }
 
 function renderDashTasks(){
-  const list=[...tasks].filter(t=>t.status!=='done').sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]).slice(0,6);
+  const list=[...tasks].filter(t=>t.status!=='done').sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]);
   document.getElementById('dash-tasks').innerHTML=list.length?list.map(taskRowHTML).join(''):`<div class="empty"><div class="empty-icon">✦</div>All clear!</div>`;
 }
 function renderDashBlocks(){
-  const key=DAYS[now.getDay()];
+  const key=now.toISOString().split('T')[0];
   const blocks=timeBlocks.filter(b=>b.day===key).sort((a,b)=>a.start.localeCompare(b.start));
-  document.getElementById('dash-blocks').innerHTML=blocks.length?blocks.map(b=>tbRowHTML(b,false)).join(''):`<div class="empty"><div class="empty-icon">◷</div>No blocks today. <span style="color:var(--accent)" onclick="openSheet('add-tb-sheet')">Add one →</span></div>`;
+  document.getElementById('dash-blocks').innerHTML=blocks.length?blocks.map(b=>tbRowHTML(b,false)).join(''):`<div class="empty"><div class="empty-icon">◷</div>No blocks today. <span style="color:var(--accent)" onclick="openAddTbSheet()">Add one →</span></div>`;
 }
 function renderDashUpdates(){
   const list=[...updates].sort((a,b)=>new Date(b.time)-new Date(a.time)).slice(0,3);
@@ -1132,22 +1136,26 @@ function getWeekDates(){
 }
 function renderDayTabs(){
   const dates=getWeekDates(),todayISO=now.toISOString().split('T')[0];
-  document.getElementById('week-label').textContent=weekOffset===0?'This Week':weekOffset===1?'Next Week':weekOffset===-1?'Last Week':`Week ${weekOffset>0?'+':''}${weekOffset}`;
+  document.getElementById('week-label').textContent=weekOffset===0?'This Week':weekOffset===1?'Next Week':weekOffset===-1?'Last Week':`Week of ${dates[0].getDate()} ${MONS[dates[0].getMonth()]}`;
   document.getElementById('day-scroll').innerHTML=dates.map(d=>{
-    const key=DAYS[d.getDay()],iso=d.toISOString().split('T')[0];
-    const isActive=key===activeDay,hasBlocks=timeBlocks.some(b=>b.day===key);
-    return `<div class="day-btn ${isActive?'active':''} ${hasBlocks?'has-blocks':''}" onclick="selectDay('${key}')">
-      <div class="day-btn-name">${key}${iso===todayISO?' ●':''}</div>
+    const iso=d.toISOString().split('T')[0],dayName=DAYS[d.getDay()];
+    const isActive=iso===activeDay,hasBlocks=timeBlocks.some(b=>b.day===iso);
+    return `<div class="day-btn ${isActive?'active':''} ${hasBlocks?'has-blocks':''}" onclick="selectDay('${iso}')">
+      <div class="day-btn-name">${dayName}${iso===todayISO?' ●':''}</div>
       <div class="day-btn-date">${d.getDate()}</div>
       <div class="day-btn-dot"></div>
     </div>`;
   }).join('');
 }
-function selectDay(key){activeDay=key;renderDayTabs();renderTimeBlocks();}
+function selectDay(iso){activeDay=iso;renderDayTabs();renderTimeBlocks();}
 function changeWeek(d){weekOffset+=d;renderDayTabs();renderTimeBlocks();}
 function renderTimeBlocks(){
   const blocks=timeBlocks.filter(b=>b.day===activeDay).sort((a,b)=>a.start.localeCompare(b.start));
-  document.getElementById('time-blocks-list').innerHTML=blocks.length?blocks.map(b=>tbRowHTML(b,true)).join(''):`<div class="empty"><div class="empty-icon">◷</div>No blocks for ${activeDay}. Tap + to add.</div>`;
+  const dayName=activeDay?DAYS[new Date(activeDay+'T12:00:00').getDay()]:'';
+  const dateNum=activeDay?new Date(activeDay+'T12:00:00').getDate():'';
+  document.getElementById('time-blocks-list').innerHTML=blocks.length
+    ?blocks.map(b=>tbRowHTML(b,true)).join('')
+    :`<div class="empty"><div class="empty-icon">◷</div>No blocks for ${dayName} ${dateNum}. Tap + to add.</div>`;
 }
 
 function renderSuggestions(){
@@ -1173,8 +1181,13 @@ function renderSuggestions(){
   }).sort((a,b)=>b.score-a.score).slice(0,4);
   const sugDays=(task)=>{
     const cands=[];
-    for(let i=1;i<=7;i++){const dIdx=(now.getDay()+i)%7;const key=DAYS[dIdx];if(key==='Sat'||key==='Sun')continue;cands.push({key,n:timeBlocks.filter(b=>b.day===key).length});}
-    return cands.sort((a,b)=>a.n-b.n).slice(0,3).map(c=>c.key);
+    for(let i=1;i<=7;i++){
+      const d=new Date(now);d.setDate(now.getDate()+i);
+      const dow=d.getDay();if(dow===0||dow===6)continue;
+      const iso=d.toISOString().split('T')[0];
+      cands.push({iso,name:DAYS[dow],n:timeBlocks.filter(b=>b.day===iso).length});
+    }
+    return cands.sort((a,b)=>a.n-b.n).slice(0,3);
   };
   el.innerHTML=scored.map(t=>{
     const top=t.reasons[0],c=projColorMap()[t.project]||'var(--accent)';
@@ -1185,20 +1198,21 @@ function renderSuggestions(){
         <div class="sug-reason" style="color:${top?.color||'var(--text3)'};">${top?.icon||''} ${top?.text||'Needs attention'}</div>
         <div class="sug-name">${t.name}</div>
         <div class="sug-meta"><span class="tag ${priClass[t.priority]}">${t.priority}</span><span class="proj-tag" style="background:${c}22;color:${c}">${t.project}</span></div>
-        <div class="sug-days">Schedule: ${days.map(d=>`<span onclick="event.stopPropagation();quickSchedule('${t.id}','${d}')">${d}</span>`).join(' · ')}</div>
+        <div class="sug-days">Schedule: ${days.map(d=>`<span onclick="event.stopPropagation();quickSchedule('${t.id}','${d.iso}')">${d.name}</span>`).join(' · ')}</div>
       </div>
     </div>`;
   }).join('');
 }
 
-function quickSchedule(taskId,day){
+function quickSchedule(taskId,iso){
   const t=tasks.find(x=>x.id===taskId);if(!t)return;
-  const dayBlocks=timeBlocks.filter(b=>b.day===day).sort((a,b)=>a.start.localeCompare(b.start));
+  const dayBlocks=timeBlocks.filter(b=>b.day===iso).sort((a,b)=>a.start.localeCompare(b.start));
   let startH=8;
   if(dayBlocks.length){const[h,m]=dayBlocks[dayBlocks.length-1].end.split(':').map(Number);startH=h+(m>0?1:0);if(startH<8)startH=8;if(startH>=18)startH=8;}
   const s=`${String(startH).padStart(2,'0')}:00`,e=`${String(Math.min(startH+2,20)).padStart(2,'0')}:00`;
-  timeBlocks.push({id:uid(),label:t.name,day,start:s,end:e,color:'tb-purple',notes:''});
-  activeDay=day;save();switchPage('time',document.getElementById('tab-time'));showToast('◷',`Scheduled ${day} at ${s}`);
+  const dayName=DAYS[new Date(iso+'T12:00:00').getDay()];
+  timeBlocks.push({id:uid(),label:t.name,day:iso,start:s,end:e,color:'tb-purple',notes:''});
+  activeDay=iso;save();switchPage('time',document.getElementById('tab-time'));showToast('◷',`Scheduled ${dayName} at ${s}`);
 }
 
 function renderProjects(){
@@ -1293,7 +1307,7 @@ function openDetail(id){
   document.getElementById('det-due').value=t.due||'';
   document.getElementById('det-due-clear').style.opacity=t.due?'1':'0.4';
   document.getElementById('det-notes').value=t.notes||'';
-  document.getElementById('det-tb-day').value=DAYS[(now.getDay()+1)%7];
+  {const tom=new Date(now);tom.setDate(now.getDate()+1);document.getElementById('det-tb-day').value=tom.toISOString().split('T')[0];}
   const statuses=[['todo','To Do','s-todo'],['inprog','In Progress','s-inprog'],['done','Done','s-done'],['blocked','Blocked','s-blocked']];
   document.getElementById('det-status-pills').innerHTML=statuses.map(([v,l,c])=>`<div class="status-pill ${c} ${t.status===v?'sel':''}" onclick="setDetStatus('${id}','${v}')">${l}</div>`).join('');
   renderDetSubtasks(t);renderDetUpdates(t);
@@ -1368,8 +1382,9 @@ function createBlockFromDetail(){
   const t=tasks.find(x=>x.id===drawerTaskId);if(!t)return;
   const day=document.getElementById('det-tb-day').value;
   const nb={id:uid(),label:t.name,day,start:document.getElementById('det-tb-start').value,end:document.getElementById('det-tb-end').value,color:document.getElementById('det-tb-color').value,notes:''};
+  if(!day){showToast('⚠','Please select a date');return;}
   timeBlocks.push(nb);activeDay=day;save();closeDetail();
-  switchPage('time',document.getElementById('tab-time'));showToast('◷',`Block added for ${day}`);
+  switchPage('time',document.getElementById('tab-time'));showToast('◷','Block added');
 }
 function toggleTask(id){
   const t=tasks.find(x=>x.id===id);if(!t)return;
@@ -1389,6 +1404,7 @@ function closeSheet(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.sheet-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 function openSettings(){openSheet('settings-sheet');}
 function openAddTaskSheet(){populateProjectDropdowns();openSheet('add-task-sheet');setTimeout(()=>document.getElementById('new-name').focus(),300);}
+function openAddTbSheet(){document.getElementById('tb-day').value=activeDay||now.toISOString().split('T')[0];openAddTbSheet();setTimeout(()=>document.getElementById('tb-label').focus(),300);}
 function openAddUpdateSheet(){populateProjectDropdowns();openSheet('add-update-sheet');setTimeout(()=>document.getElementById('upd-title').focus(),300);}
 
 function saveNewTask(){
@@ -1400,10 +1416,12 @@ function saveNewTask(){
 }
 function saveNewBlock(){
   const label=document.getElementById('tb-label').value.trim();if(!label)return;
-  const nb={id:uid(),label,day:document.getElementById('tb-day').value,start:document.getElementById('tb-start').value,end:document.getElementById('tb-end').value,color:document.getElementById('tb-color').value,notes:document.getElementById('tb-notes').value};
+  const day=document.getElementById('tb-day').value;
+  if(!day){showToast('⚠','Please select a date');return;}
+  const nb={id:uid(),label,day,start:document.getElementById('tb-start').value,end:document.getElementById('tb-end').value,color:document.getElementById('tb-color').value,notes:document.getElementById('tb-notes').value};
   timeBlocks.push(nb);activeDay=nb.day;
   document.getElementById('tb-label').value='';document.getElementById('tb-notes').value='';
-  closeSheet('add-tb-sheet');save();switchPage('time',document.getElementById('tab-time'));showToast('◷',`Block added for ${nb.day}`);
+  closeSheet('add-tb-sheet');save();switchPage('time',document.getElementById('tab-time'));showToast('◷','Block added');
 }
 function saveNewUpdate(){
   const title=document.getElementById('upd-title').value.trim();if(!title)return;
@@ -1416,7 +1434,7 @@ function openEditBlock(id){
   const b=timeBlocks.find(x=>x.id===id);if(!b)return;
   editingBlockId=id;
   document.getElementById('etb-label').value=b.label;
-  document.getElementById('etb-day').value=b.day;
+  document.getElementById('etb-day').value=b.day||'';
   document.getElementById('etb-color').value=b.color;
   document.getElementById('etb-start').value=b.start;
   document.getElementById('etb-end').value=b.end;
@@ -1438,7 +1456,7 @@ function saveEditBlock(){
   const label=document.getElementById('etb-label').value.trim();
   if(!label){document.getElementById('etb-label').style.borderColor='var(--rose)';return;}
   b.label=label;
-  b.day=document.getElementById('etb-day').value;
+  b.day=document.getElementById('etb-day').value||b.day;
   b.color=document.getElementById('etb-color').value;
   b.start=document.getElementById('etb-start').value;
   b.end=document.getElementById('etb-end').value;
