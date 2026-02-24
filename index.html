@@ -443,9 +443,9 @@ body::before{
         <div class="filter-pill" onclick="filterTasks('done',this)">Done</div>
         <div class="filter-pill" onclick="filterTasks('blocked',this)">Blocked</div>
         <div style="width:1px;background:var(--border);flex-shrink:0;margin:4px 2px;"></div>
-        <div class="grp-pill active" id="mob-grp-status" onclick="setGroupBy('status',this)">By Status</div>
-        <div class="grp-pill" id="mob-grp-project" onclick="setGroupBy('project',this)">By Project</div>
-        <div class="grp-pill" id="mob-grp-folder" onclick="setGroupBy('folder',this)">By Folder</div>
+        <div class="grp-pill active" id="mob-grp-status" onclick="setGroupBy('status')">By Status</div>
+        <div class="grp-pill" id="mob-grp-project" onclick="setGroupBy('project')">By Project</div>
+        <div class="grp-pill" id="mob-grp-folder" onclick="setGroupBy('folder')">By Folder</div>
       </div>
       <div class="card"><div id="all-tasks"></div></div>
       <div class="spacer"></div>
@@ -1200,10 +1200,12 @@ function mobRenderByFolder(list){
   }
   return html||`<div class="empty"><div class="empty-icon">✦</div>No tasks.</div>`;
 }
-function setGroupBy(g,el){
+function setGroupBy(g){
   taskGroupBy=g;
-  document.querySelectorAll('.grp-pill').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
+  ['status','project','folder'].forEach(k=>{
+    const b=document.getElementById('mob-grp-'+k);
+    if(b)b.classList.toggle('active',k===g);
+  });
   renderAllTasks();renderDashTasks();
 }
 function filterTasks(f,el){
