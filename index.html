@@ -156,6 +156,10 @@ body::before{
 .task-due{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-left:auto;flex-shrink:0;padding-top:2px;}
 .task-due.overdue{color:var(--rose);}
 .subtask-mini{display:flex;align-items:center;gap:5px;margin-top:5px;}
+.grp-pill{padding:5px 10px;border-radius:20px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;border:1px solid var(--border);background:var(--surface2);transition:all 0.15s;white-space:nowrap;}
+.grp-pill.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.mob-folder-group-hdr{padding:10px 16px 4px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);background:var(--surface);}
+.mob-folder-group-name{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);}
 .subtask-mini-bar{height:2px;flex:1;max-width:50px;background:var(--border);border-radius:1px;overflow:hidden;}
 .subtask-mini-fill{height:100%;background:var(--green);border-radius:1px;}
 .subtask-mini-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);}
@@ -438,6 +442,10 @@ body::before{
         <div class="filter-pill" onclick="filterTasks('inprog',this)">In Progress</div>
         <div class="filter-pill" onclick="filterTasks('done',this)">Done</div>
         <div class="filter-pill" onclick="filterTasks('blocked',this)">Blocked</div>
+        <div style="width:1px;background:var(--border);flex-shrink:0;margin:4px 2px;"></div>
+        <div class="grp-pill active" id="mob-grp-status" onclick="setGroupBy('status',this)">By Status</div>
+        <div class="grp-pill" id="mob-grp-project" onclick="setGroupBy('project',this)">By Project</div>
+        <div class="grp-pill" id="mob-grp-folder" onclick="setGroupBy('folder',this)">By Folder</div>
       </div>
       <div class="card"><div id="all-tasks"></div></div>
       <div class="spacer"></div>
@@ -1002,7 +1010,7 @@ document.getElementById('dash-sub').textContent=`${['Sunday','Monday','Tuesday',
 initSupabase();
 
 // ── STATE ──
-let currentPage='dashboard',taskFilter='all',taskSearch='',weekOffset=0;
+let currentPage='dashboard',taskFilter='all',taskSearch='',weekOffset=0,taskGroupBy='project';
 let activeDay=now.toISOString().split('T')[0];
 let drawerTaskId=null;
 
@@ -1073,7 +1081,10 @@ function taskRowHTML(t){
 
 function renderDashTasks(){
   const list=[...tasks].filter(t=>t.status!=='done').sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]);
-  document.getElementById('dash-tasks').innerHTML=list.length?list.map(taskRowHTML).join(''):`<div class="empty"><div class="empty-icon">✦</div>All clear!</div>`;
+  if(!list.length){document.getElementById('dash-tasks').innerHTML=`<div class="empty"><div class="empty-icon">✦</div>All clear!</div>`;return;}
+  if(taskGroupBy==='project')document.getElementById('dash-tasks').innerHTML=mobRenderByProject(list);
+  else if(taskGroupBy==='folder')document.getElementById('dash-tasks').innerHTML=mobRenderByFolder(list);
+  else document.getElementById('dash-tasks').innerHTML=list.map(taskRowHTML).join('');
 }
 function renderDashBlocks(){
   const key=now.toISOString().split('T')[0];
@@ -1087,11 +1098,14 @@ function renderDashUpdates(){
 function renderAllTasks(){
   let list=[...tasks];
   if(taskSearch)list=list.filter(t=>t.name.toLowerCase().includes(taskSearch.toLowerCase()));
-  if(taskFilter!=='all'){
-    list=list.filter(t=>t.status===taskFilter).sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]);
-    document.getElementById('all-tasks').innerHTML=list.length?list.map(taskRowHTML).join(''):`<div class="empty"><div class="empty-icon">✦</div>No tasks found.</div>`;
-    return;
-  }
+  if(taskFilter!=='all')list=list.filter(t=>t.status===taskFilter);
+  const el=document.getElementById('all-tasks');
+  if(!list.length){el.innerHTML=`<div class="empty"><div class="empty-icon">✦</div>No tasks found.</div>`;return;}
+  if(taskGroupBy==='project')el.innerHTML=mobRenderByProject(list);
+  else if(taskGroupBy==='folder')el.innerHTML=mobRenderByFolder(list);
+  else el.innerHTML=mobRenderByStatus(list);
+}
+function mobRenderByStatus(list){
   const groups=[
     {key:'inprog',label:'In Progress',icon:'●',color:'var(--accent)'},
     {key:'todo',label:'To Do',icon:'□',color:'var(--text2)'},
@@ -1109,7 +1123,88 @@ function renderAllTasks(){
     </div>`;
     html+=items.map(taskRowHTML).join('');
   });
-  document.getElementById('all-tasks').innerHTML=html||`<div class="empty"><div class="empty-icon">✦</div>No tasks. Tap + to add one.</div>`;
+  return html||`<div class="empty"><div class="empty-icon">✦</div>No tasks.</div>`;
+}
+function mobRenderByProject(list){
+  const projNames=[...new Set(projects.map(p=>p.name))].filter(n=>list.some(t=>t.project===n));
+  const unassigned=list.filter(t=>!t.project||!projects.find(p=>p.name===t.project));
+  let html='';
+  projNames.forEach(name=>{
+    const items=list.filter(t=>t.project===name).sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]);
+    if(!items.length)return;
+    const p=getProj(name);const c=p.color||'#888';
+    html+=`<div style="padding:10px 16px 4px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border);background:var(--surface2);border-left:3px solid ${c};">
+      <span style="color:${c};font-size:13px;">${p.icon||'◆'}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text2);">${name}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${items.length}</span>
+    </div>`;
+    html+=items.map(taskRowHTML).join('');
+  });
+  if(unassigned.length){
+    html+=`<div style="padding:10px 16px 4px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border);background:var(--surface2);">
+      <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);">No Project</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${unassigned.length}</span>
+    </div>`;
+    html+=unassigned.map(taskRowHTML).join('');
+  }
+  return html||`<div class="empty"><div class="empty-icon">✦</div>No tasks.</div>`;
+}
+function mobRenderByFolder(list){
+  const folders=getAllFolders();
+  function renderFolderSec(parentId,depth){
+    let html='';
+    const childFolders=folders.filter(f=>f.parent===parentId);
+    childFolders.forEach(folder=>{
+      const folderProjs=projects.filter(p=>p.folder===folder.id);
+      const folderTasks=list.filter(t=>folderProjs.some(p=>p.name===t.project));
+      const indent=depth*10;
+      html+=`<div class="mob-folder-group-hdr" style="padding-left:${16+indent}px;">
+        <span style="color:var(--text3);font-size:10px;">▾</span>
+        <span class="mob-folder-group-name">${folder.id}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${folderTasks.length}</span>
+      </div>`;
+      folderProjs.forEach(proj=>{
+        const items=list.filter(t=>t.project===proj.name).sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]);
+        if(!items.length)return;
+        const c=proj.color||'#888';
+        html+=`<div style="padding:8px ${16}px 4px ${22+indent}px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border);background:var(--surface2);border-left:3px solid ${c};">
+          <span style="color:${c};font-size:12px;">${proj.icon||'◆'}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;color:var(--text2);">${proj.name}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${items.length}</span>
+        </div>`;
+        html+=items.map(taskRowHTML).join('');
+      });
+      html+=renderFolderSec(folder.id,depth+1);
+    });
+    return html;
+  }
+  let html=renderFolderSec(null,0);
+  const unfoldered=projects.filter(p=>!p.folder);
+  let ungroupedHtml='';
+  unfoldered.forEach(proj=>{
+    const items=list.filter(t=>t.project===proj.name).sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]);
+    if(!items.length)return;
+    const c=proj.color||'#888';
+    ungroupedHtml+=`<div style="padding:10px 16px 4px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border);background:var(--surface2);border-left:3px solid ${c};">
+      <span style="color:${c};font-size:12px;">${proj.icon||'◆'}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;color:var(--text2);">${proj.name}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${items.length}</span>
+    </div>`;
+    ungroupedHtml+=items.map(taskRowHTML).join('');
+  });
+  if(ungroupedHtml)html+=`<div class="mob-folder-group-hdr"><span class="mob-folder-group-name">No Folder</span></div>`+ungroupedHtml;
+  const noProj=list.filter(t=>!t.project||!projects.find(p=>p.name===t.project));
+  if(noProj.length){
+    html+=`<div class="mob-folder-group-hdr"><span class="mob-folder-group-name">No Project</span><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${noProj.length}</span></div>`;
+    html+=noProj.map(taskRowHTML).join('');
+  }
+  return html||`<div class="empty"><div class="empty-icon">✦</div>No tasks.</div>`;
+}
+function setGroupBy(g,el){
+  taskGroupBy=g;
+  document.querySelectorAll('.grp-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderAllTasks();renderDashTasks();
 }
 function filterTasks(f,el){
   taskFilter=f;
