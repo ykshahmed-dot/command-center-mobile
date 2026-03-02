@@ -1068,13 +1068,10 @@ async function pullFromSupabase(){
   if(tb.error){console.warn('time_blocks pull:',tb.error);}
   else{timeBlocks=tb.data.map(fromRow_tb);localStorage.setItem('cc_tb',JSON.stringify(timeBlocks));}
   if(np&&!np.error&&np.data){
-    const _ls=localStorage.getItem('np_notes_v2');
-    const _local=_ls?JSON.parse(_ls):[];
-    const _rids=new Set(np.data.map(r=>r.id));
-    const _lonly=_local.filter(n=>!_rids.has(n.id));
-    npNotes=[...np.data.map(r=>({id:r.id,text:r.text,tag:r.tag||'general',
+    // Supabase is source of truth — never merge local notes (avoids un-deleting deleted notes)
+    npNotes=np.data.map(r=>({id:r.id,text:r.text,tag:r.tag||'general',
       priority:r.priority||'med',converted:r.converted||false,
-      createdAt:r.created_at,taskId:r.task_id||null})),..._lonly]
+      createdAt:r.created_at,taskId:r.task_id||null}))
       .sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
     localStorage.setItem('np_notes_v2',JSON.stringify(npNotes));
     npRender();
@@ -1105,16 +1102,12 @@ async function pushToSupabase(){
     const sentinelRow={name:'__cc_folders__',color:'#000',icon:'_',
       description:JSON.stringify(folders),folder:'',sort_order:9999};
     const projRows=[...projects.map((p,i)=>toRow_project(p,i)),sentinelRow];
-    const _npRows=npNotes.map(n=>({
-      id:n.id,text:n.text,tag:n.tag||'general',priority:n.priority||'med',
-      converted:n.converted||false,created_at:n.createdAt,task_id:n.taskId||null
-    }));
     const results=await Promise.all([
       sb.from('tasks').upsert(tasks.map(toRow_task),{onConflict:'id'}),
       sb.from('time_blocks').upsert(timeBlocks.map(toRow_tb),{onConflict:'id'}),
       sb.from('updates').upsert(updates.map(toRow_update),{onConflict:'id'}),
       sb.from('projects').upsert(projRows,{onConflict:'name'}),
-      _npRows.length?sb.from('notepad_notes').upsert(_npRows,{onConflict:'id'}):Promise.resolve({error:null}),
+      // notepad_notes excluded — each op upserts/deletes directly
     ]);
     const errs=results.filter(r=>r.error);
     if(errs.length){console.warn('Push errors:',errs.map(r=>r.error));setSyncStatus('offline');}
@@ -2233,16 +2226,28 @@ async function npSave(){
   npSaveLocal();   // localStorage immediately
   npClear();npRender();
   showToast('✦','Note saved');
-  schedulePush();  // sync to Supabase with all other data
+  // Upsert this note immediately — don't rely on batch push
+  if(supabaseReady){
+    try{
+      await sb.from('notepad_notes').upsert({
+        id:note.id,text:note.text,tag:note.tag,priority:note.priority,
+        converted:false,created_at:note.createdAt,task_id:null
+      },{onConflict:'id'});
+    }catch(e2){ console.warn('np upsert failed:',e2); }
+  }
 }
 
 // ── Delete ──
-function npDel(id,e){
+async function npDel(id,e){
   if(e)e.stopPropagation();
   npNotes=npNotes.filter(n=>n.id!==id);
   npSaveLocal();npRender();
   showToast('↓','Note deleted');
-  schedulePush();
+  // Immediate DELETE — don't use push (upsert can't express deletion)
+  if(supabaseReady){
+    try{ await sb.from('notepad_notes').delete().eq('id',id); }
+    catch(e2){ console.warn('np delete sync failed:',e2); }
+  }
 }
 
 // ── Convert modal ──
@@ -2277,7 +2282,17 @@ function npDoConv(){
   if(n){n.converted=true;n.taskId=tid;}
   npSaveLocal();npRender();render();npCloseConv();
   showToast('✦',`Task "${name}" created!`);
-  schedulePush();
+  schedulePush(); // push task changes
+  // Also update note's converted state immediately
+  const _cn=npNotes.find(x=>x.id===npConvNote.id);
+  if(_cn && supabaseReady){
+    try{
+      await sb.from('notepad_notes').upsert({
+        id:_cn.id,text:_cn.text,tag:_cn.tag,priority:_cn.priority,
+        converted:true,created_at:_cn.createdAt,task_id:tid
+      },{onConflict:'id'});
+    }catch(e2){ console.warn('np convert sync failed:',e2); }
+  }
 }
 
 // ── Project dropdown ──
