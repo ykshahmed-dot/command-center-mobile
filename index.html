@@ -70,11 +70,11 @@ body::before{
   padding:0 18px;
   position:relative;z-index:10;
 }
-.header-title{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;letter-spacing:-0.3px;}
+.header-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;letter-spacing:-0.3px;}
 .header-logo{display:flex;align-items:center;gap:8px;}
 .logo-mark{width:28px;height:28px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 14px color-mix(in srgb,var(--accent) 35%,transparent);}
 .header-right{display:flex;align-items:center;gap:8px;}
-.sync-dot{font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);}
+.sync-dot{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);}
 .icon-btn{width:36px;height:36px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;}
 
 /* ── SCROLLABLE MAIN ── */
@@ -100,7 +100,7 @@ body::before{
 .tab-item{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:3px;cursor:pointer;color:var(--text3);transition:color 0.15s;
-  font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:0.5px;
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.5px;
   -webkit-tap-highlight-color:transparent;
   user-select:none;
 }
@@ -123,14 +123,14 @@ body::before{
 
 /* ── GREETING ── */
 .greeting{margin-bottom:20px;}
-.greeting-title{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:3px;}
+.greeting-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:3px;}
 .greeting-sub{font-size:13px;color:var(--text2);}
 
 /* ── STAT CARDS ── */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;}
-.stat-label{font-family:'Geist Mono',monospace;font-size:8.5px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
-.stat-value{font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1;margin-bottom:3px;}
+.stat-label{font-family:'DM Mono',monospace;font-size:8.5px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.stat-value{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1;margin-bottom:3px;}
 .stat-sub{font-size:10.5px;color:var(--text3);}
 .stat-bar{margin-top:10px;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
 .stat-fill{height:100%;border-radius:2px;transition:width 0.6s ease;}
@@ -138,9 +138,9 @@ body::before{
 /* ── CARDS / PANELS ── */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;}
 .card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);}
-.card-title{font-family:'Bricolage Grotesque',sans-serif;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;}
-.card-badge{font-family:'Geist Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;background:var(--surface2);color:var(--text2);}
-.section-label{font-family:'Geist Mono',monospace;font-size:9.5px;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;margin-top:4px;}
+.card-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.card-badge{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;background:var(--surface2);color:var(--text2);}
+.section-label{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;margin-top:4px;}
 
 /* ── TASK ROWS ── */
 .task-row{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;active:background:var(--surface2);}
@@ -153,28 +153,28 @@ body::before{
 .task-name{font-size:14px;font-weight:500;line-height:1.3;margin-bottom:5px;}
 .task-name.done{text-decoration:line-through;color:var(--text3);}
 .task-meta{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
-.task-due{font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);margin-left:auto;flex-shrink:0;padding-top:2px;}
+.task-due{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-left:auto;flex-shrink:0;padding-top:2px;}
 .task-due.overdue{color:var(--rose);}
 .subtask-mini{display:flex;align-items:center;gap:5px;margin-top:5px;}
-.grp-pill{padding:5px 10px;border-radius:20px;font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;border:1px solid var(--border);background:var(--surface2);transition:all 0.15s;white-space:nowrap;}
+.grp-pill{padding:5px 10px;border-radius:20px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;border:1px solid var(--border);background:var(--surface2);transition:all 0.15s;white-space:nowrap;}
 .grp-pill.active{background:var(--accent);color:#fff;border-color:var(--accent);}
 .mob-folder-group-hdr{padding:10px 16px 4px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);background:var(--surface);}
-.mob-folder-group-name{font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);}
+.mob-folder-group-name{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);}
 .subtask-mini-bar{height:2px;flex:1;max-width:50px;background:var(--border);border-radius:1px;overflow:hidden;}
 .subtask-mini-fill{height:100%;background:var(--green);border-radius:1px;}
-.subtask-mini-label{font-family:'Geist Mono',monospace;font-size:9px;color:var(--text3);}
+.subtask-mini-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);}
 
 /* ── TAGS ── */
-.tag{font-family:'Geist Mono',monospace;font-size:9px;font-weight:500;padding:2px 6px;border-radius:5px;letter-spacing:0.3px;}
+.tag{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;padding:2px 6px;border-radius:5px;letter-spacing:0.3px;}
 .priority-high{background:color-mix(in srgb,var(--rose) 15%,transparent);color:var(--rose);}
 .priority-med{background:color-mix(in srgb,var(--amber) 15%,transparent);color:var(--amber);}
 .priority-low{background:color-mix(in srgb,var(--green) 15%,transparent);color:var(--green);}
-.proj-tag{font-family:'Geist Mono',monospace;font-size:9px;padding:2px 6px;border-radius:5px;}
+.proj-tag{font-family:'DM Mono',monospace;font-size:9px;padding:2px 6px;border-radius:5px;}
 
 /* ── TIME BLOCKS ── */
 .tb-row{display:flex;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);align-items:center;}
 .tb-row:last-child{border-bottom:none;}
-.tb-time{font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);width:38px;flex-shrink:0;}
+.tb-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);width:38px;flex-shrink:0;}
 .tb-bar{flex:1;border-radius:8px;padding:8px 11px;min-height:40px;}
 .tb-purple{background:color-mix(in srgb,var(--accent) 18%,transparent);border-left:3px solid var(--accent);}
 .tb-green{background:color-mix(in srgb,var(--green) 18%,transparent);border-left:3px solid var(--green);}
@@ -195,19 +195,19 @@ body::before{
 .update-title{font-size:13px;font-weight:500;margin-bottom:3px;}
 .update-text{font-size:12px;color:var(--text2);margin-bottom:5px;}
 .update-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
-.update-time{font-family:'Geist Mono',monospace;font-size:9.5px;color:var(--text3);}
+.update-time{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--text3);}
 
 /* ── WEEK/DAY SELECTOR ── */
 .week-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .week-arrow{width:34px;height:34px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--text2);}
-.week-label-txt{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;}
+.week-label-txt{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
 .day-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none;}
 .day-scroll::-webkit-scrollbar{display:none;}
 .day-btn{flex-shrink:0;width:52px;border-radius:12px;padding:8px 4px;text-align:center;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);transition:all 0.15s;position:relative;}
 .day-btn.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);}
-.day-btn-name{font-family:'Geist Mono',monospace;font-size:9.5px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;}
+.day-btn-name{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;}
 .day-btn.active .day-btn-name{color:var(--accent);}
-.day-btn-date{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;color:var(--text);margin-top:2px;}
+.day-btn-date{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);margin-top:2px;}
 .day-btn.active .day-btn-date{color:var(--accent);}
 .day-btn-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);margin:3px auto 0;opacity:0;}
 .day-btn.has-blocks .day-btn-dot{opacity:1;}
@@ -217,46 +217,46 @@ body::before{
 .sug-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;gap:10px;align-items:flex-start;position:relative;overflow:hidden;}
 .sug-stripe{position:absolute;left:0;top:0;bottom:0;width:3px;}
 .sug-body{flex:1;min-width:0;}
-.sug-reason{font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:0.8px;text-transform:uppercase;font-weight:600;margin-bottom:4px;}
+.sug-reason{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.8px;text-transform:uppercase;font-weight:600;margin-bottom:4px;}
 .sug-name{font-size:14px;font-weight:600;margin-bottom:6px;}
 .sug-meta{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
-.sug-days{font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);}
+.sug-days{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);}
 .sug-days span{color:var(--accent);text-decoration:underline;text-decoration-style:dashed;margin:0 2px;}
 .sug-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-size:11px;font-weight:500;color:var(--text2);white-space:nowrap;flex-shrink:0;margin-top:4px;}
 
 /* ── PROJECT / FOLDER DETAIL ── */
-.mob-breadcrumb{font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.mob-breadcrumb{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .mob-breadcrumb span{cursor:pointer;}
 .mob-breadcrumb span:last-child{color:var(--text);cursor:default;}
 .mob-proj-detail-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:18px;}
-.mob-proj-detail-name{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;}
+.mob-proj-detail-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;}
 .mob-proj-detail-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;}
 .mob-proj-stats{display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
 .mob-proj-stat{flex:1;text-align:center;padding:10px 4px;border-right:1px solid var(--border);}
 .mob-proj-stat:last-child{border-right:none;}
-.mob-proj-stat-val{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;}
-.mob-proj-stat-label{font-family:'Geist Mono',monospace;font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;}
+.mob-proj-stat-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
+.mob-proj-stat-label{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;}
 .mob-detail-progress{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
 .mob-detail-progress-fill{height:100%;border-radius:3px;transition:width 0.5s;}
 .mob-status-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);border-radius:8px;margin:14px 0 8px;}
 .mob-folder-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;cursor:pointer;}
-.mob-folder-card-name{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;margin-bottom:2px;}
-.mob-folder-card-sub{font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);}
+.mob-folder-card-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:2px;}
+.mob-folder-card-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);}
 
 /* ── PROJECT CARDS ── */
 .proj-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px;cursor:pointer;transition:all 0.18s;display:flex;flex-direction:column;}
 .proj-card:active{transform:scale(0.99);}
 .proj-folder-header{display:flex;align-items:center;gap:10px;padding:16px 18px;background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;cursor:pointer;min-height:56px;}
-.proj-folder-name{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.proj-folder-count{font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);background:var(--surface2);padding:2px 8px;border-radius:20px;}
+.proj-folder-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.proj-folder-count{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);background:var(--surface2);padding:2px 8px;border-radius:20px;}
 .proj-folder-del{font-size:12px;color:var(--text3);padding:4px 10px;border-radius:6px;border:1px solid var(--border);}
 .proj-card-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .proj-icon{font-size:24px;}
-.proj-name{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;flex:1;}
+.proj-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;flex:1;}
 .proj-desc{font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.6;}
 .proj-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:10px;}
 .proj-bar-fill{height:100%;border-radius:2px;}
-.proj-meta{display:flex;justify-content:space-between;font-family:'Geist Mono',monospace;font-size:11px;color:var(--text3);margin-top:auto;}
+.proj-meta{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-top:auto;}
 .proj-card-actions{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
 .proj-action-btn{flex:1;text-align:center;padding:8px;border-radius:8px;border:1px solid var(--border);font-size:12px;color:var(--text2);background:var(--surface2);}
 .proj-action-btn.del{color:var(--rose);border-color:color-mix(in srgb,var(--rose) 30%,transparent);}
@@ -297,7 +297,7 @@ body::before{
 .modal-overlay.open{display:flex;}
 .sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border2);margin:12px auto 0;}
 .sheet-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;}
-.sheet-title{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;}
+.sheet-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
 .sheet-close{width:30px;height:30px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text3);cursor:pointer;}
 .sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 20px 20px;flex:1;}
 .sheet-footer{padding:12px 20px 4px;border-top:1px solid var(--border);display:flex;gap:8px;}
@@ -318,12 +318,12 @@ body::before{
   border-bottom:1px solid var(--border);
 }
 .detail-back{display:flex;align-items:center;gap:4px;color:var(--accent);font-size:15px;font-weight:500;cursor:pointer;}
-.detail-nav-title{flex:1;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.detail-nav-title{flex:1;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .detail-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 18px;}
 .detail-delete{padding:0 18px 16px;}
 
 /* ── FORM FIELDS ── */
-.field-label{font-family:'Geist Mono',monospace;font-size:9.5px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.field-label{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
 .field-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:15px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;}
 .field-input:focus{border-color:var(--accent);}
 .field-select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a5a6a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
@@ -331,7 +331,7 @@ body::before{
 .field-textarea:focus{border-color:var(--accent);}
 .field-group{margin-bottom:16px;}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-.field-title-input{width:100%;background:transparent;border:none;font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:var(--text);outline:none;line-height:1.3;margin-bottom:16px;padding:0;}
+.field-title-input{width:100%;background:transparent;border:none;font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--text);outline:none;line-height:1.3;margin-bottom:16px;padding:0;}
 
 /* ── STATUS PILLS ── */
 .status-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
@@ -357,7 +357,7 @@ body::before{
 .update-item{padding:10px 0;border-bottom:1px solid var(--border);}
 .update-item:last-child{border-bottom:none;}
 .update-item-text{font-size:13px;color:var(--text2);margin-bottom:4px;display:flex;justify-content:space-between;gap:8px;}
-.update-item-time{font-family:'Geist Mono',monospace;font-size:9.5px;color:var(--text3);}
+.update-item-time{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--text3);}
 .update-item-del{color:var(--text3);font-size:16px;cursor:pointer;flex-shrink:0;}
 
 /* ── BUTTONS ── */
@@ -372,7 +372,7 @@ body::before{
 
 /* ── THEME SWITCHER ── */
 .theme-row{display:flex;gap:6px;}
-.theme-opt{flex:1;padding:9px 0;border-radius:10px;border:1.5px solid var(--border);font-size:11px;font-family:'Geist Mono',monospace;text-align:center;color:var(--text2);background:var(--surface2);cursor:pointer;}
+.theme-opt{flex:1;padding:9px 0;border-radius:10px;border:1.5px solid var(--border);font-size:11px;font-family:'DM Mono',monospace;text-align:center;color:var(--text2);background:var(--surface2);cursor:pointer;}
 .theme-opt.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);}
 
 /* ── TOAST ── */
@@ -390,110 +390,10 @@ body::before{
 /* ── DIVIDER ── */
 .divider{height:1px;background:var(--border);margin:16px 0;}
 .spacer{height:20px;}
-
-/* ═══════════════════════════════════════
-   LAUNCHER
-   ═══════════════════════════════════════ */
-.launcher{position:fixed;inset:0;z-index:2000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.3s,transform 0.3s;}
-.launcher.hidden{opacity:0;pointer-events:none;transform:scale(0.95);}
-.launcher-eyebrow{font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:52px;}
-.launcher-grid{display:flex;gap:40px;justify-content:center;}
-.launcher-app{display:flex;flex-direction:column;align-items:center;gap:14px;cursor:pointer;}
-.launcher-icon{width:84px;height:84px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:34px;border:1px solid var(--border2);transition:transform 0.18s;-webkit-tap-highlight-color:transparent;}
-.launcher-icon:active{transform:scale(0.93);}
-.launcher-icon.cc{background:linear-gradient(140deg,var(--accent) 0%,#c084fc 100%);box-shadow:0 8px 28px rgba(123,104,255,0.35);}
-.launcher-icon.np{background:linear-gradient(140deg,var(--green) 0%,var(--sky) 100%);box-shadow:0 8px 28px rgba(0,229,160,0.28);}
-.launcher-label{font-family:'Geist Mono',monospace;font-size:10px;color:var(--text2);letter-spacing:1.2px;text-transform:uppercase;text-align:center;}
-
-/* ═══════════════════════════════════════
-   NOTEPAD PAGE
-   ═══════════════════════════════════════ */
-.np-hd{padding:14px 16px 10px;border-bottom:1px solid var(--border);}
-.np-hd h2{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;letter-spacing:-0.3px;margin-bottom:2px;}
-.np-hd p{font-size:11px;color:var(--text3);}
-.np-textarea{width:100%;min-height:96px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:15px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;resize:none;line-height:1.6;transition:border-color 0.15s,box-shadow 0.15s;-webkit-appearance:none;box-sizing:border-box;}
-.np-textarea::placeholder{color:var(--text3);}
-.np-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
-.np-tag-pills{display:flex;gap:6px;flex-wrap:wrap;}
-.np-tag-pill{padding:6px 12px;border-radius:20px;font-family:'Geist Mono',monospace;font-size:9.5px;letter-spacing:0.3px;cursor:pointer;border:1.5px solid var(--border2);color:var(--text3);transition:all 0.14s;user-select:none;-webkit-tap-highlight-color:transparent;}
-.np-tag-pill.active{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
-.np-pri-row{display:flex;gap:6px;}
-.np-pri-btn{flex:1;padding:9px 0;text-align:center;border-radius:9px;font-family:'Geist Mono',monospace;font-size:9.5px;letter-spacing:0.4px;cursor:pointer;border:1.5px solid var(--border2);color:var(--text3);transition:all 0.14s;user-select:none;-webkit-tap-highlight-color:transparent;}
-.np-pri-btn.np-high{border-color:var(--rose);color:var(--rose);background:var(--rose-soft);}
-.np-pri-btn.np-med{border-color:var(--amber);color:var(--amber);background:var(--amber-soft);}
-.np-pri-btn.np-low{border-color:var(--green);color:var(--green);background:var(--green-soft);}
-.np-save-btn{width:100%;padding:13px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#5c4fe0);border:none;color:white;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px var(--accent-soft);-webkit-tap-highlight-color:transparent;}
-.np-filter-strip{display:flex;gap:4px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--card-bg);}
-.np-filter-tab{padding:6px 14px;border-radius:8px;font-family:'Geist Mono',monospace;font-size:9.5px;letter-spacing:0.4px;cursor:pointer;color:var(--text3);transition:all 0.13s;border:1px solid transparent;-webkit-tap-highlight-color:transparent;}
-.np-filter-tab.active{background:var(--surface);color:var(--text);border-color:var(--border2);}
-.np-notes-badge{font-family:'Geist Mono',monospace;font-size:9px;padding:2px 8px;border-radius:20px;background:var(--card-bg);color:var(--text3);border:1px solid var(--border);}
-.np-note-card{padding:14px 16px 12px;border-bottom:1px solid var(--border);position:relative;-webkit-tap-highlight-color:transparent;}
-.np-note-card::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:3px;background:var(--accent);border-radius:0 3px 3px 0;opacity:0.7;}
-.np-note-card.np-converted{opacity:0.55;}
-.np-note-card.np-converted::before{background:var(--green);}
-.np-card-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
-.np-note-text{flex:1;font-size:14px;line-height:1.5;color:var(--text);white-space:pre-wrap;word-break:break-word;}
-.np-note-text.np-strike{text-decoration:line-through;color:var(--text3);}
-.np-card-btns{display:flex;gap:5px;flex-shrink:0;}
-.np-cb{padding:5px 10px;border-radius:7px;font-size:9.5px;font-family:'Geist Mono',monospace;cursor:pointer;border:1px solid var(--border2);background:var(--card-bg);color:var(--text3);-webkit-tap-highlight-color:transparent;}
-.np-cb.np-to-task{color:var(--accent);border-color:var(--accent);background:var(--accent-soft);}
-.np-cb.np-del{color:var(--rose);border-color:var(--rose);}
-.np-card-meta{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
-.np-tag-badge{font-family:'Geist Mono',monospace;font-size:8px;padding:2px 7px;border-radius:4px;letter-spacing:0.4px;text-transform:uppercase;}
-.np-pri-lbl{font-family:'Geist Mono',monospace;font-size:8px;}
-.np-time-lbl{font-family:'Geist Mono',monospace;font-size:8px;color:var(--text3);margin-left:auto;}
-.np-conv-badge{font-family:'Geist Mono',monospace;font-size:8px;padding:2px 7px;border-radius:4px;background:var(--green-soft);color:var(--green);}
-.np-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;gap:10px;color:var(--text3);}
-.np-empty-icon{font-size:38px;opacity:0.3;}
-.np-empty-txt{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.8px;}
-/* project dropdown in convert modal */
-.np-proj-wrap{position:relative;}
-.np-proj-trigger{display:flex;align-items:center;gap:8px;width:100%;background:var(--card-bg);border:1px solid var(--border);border-radius:11px;padding:11px 14px;font-size:14px;color:var(--text);cursor:pointer;user-select:none;}
-.np-proj-trigger.open{border-color:var(--accent);}
-.np-proj-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.np-proj-val{flex:1;}
-.np-proj-arrow{font-size:11px;color:var(--text3);transition:transform 0.18s;}
-.np-proj-trigger.open .np-proj-arrow{transform:rotate(180deg);}
-.np-proj-dd{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:100;background:var(--surface);border:1px solid var(--border2);border-radius:13px;box-shadow:0 20px 48px rgba(0,0,0,0.5);display:none;max-height:220px;overflow-y:auto;backdrop-filter:blur(24px);}
-.np-proj-dd.open{display:block;}
-.np-proj-opt{display:flex;align-items:center;gap:10px;padding:13px 15px;cursor:pointer;font-size:14px;color:var(--text2);}
-.np-proj-opt:active{background:var(--glass2);}
-.np-proj-opt.selected{background:var(--accent-soft);color:var(--accent);}
-.np-proj-add{border-top:1px solid var(--border);}
-.np-cswatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:all 0.14s;flex-shrink:0;}
-.np-cswatch.active{border-color:white;transform:scale(1.18);}
-
-
-}
-
-
-/* RESTORE BANNER */
-#restore-banner{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:5000;background:var(--accent);color:white;border-radius:14px;padding:12px 20px;display:none;align-items:center;gap:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;box-shadow:0 8px 32px rgba(123,104,255,0.5);white-space:nowrap;}
-#restore-banner .rb-spin{width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:rbspin 0.7s linear infinite;}
-@keyframes rbspin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body data-theme="dark">
 
-<!-- LAUNCHER -->
-<div class="launcher" id="launcher">
-  <div class="launcher-eyebrow">Command Center Suite</div>
-  <div class="launcher-grid">
-    <div class="launcher-app" onclick="launchApp('cc')">
-      <div class="launcher-icon cc">⚡</div>
-      <div class="launcher-label">Command<br>Center</div>
-    </div>
-    <div class="launcher-app" onclick="launchApp('np')">
-      <div class="launcher-icon np">📝</div>
-      <div class="launcher-label">Notepad</div>
-    </div>
-  </div>
-</div>
-  <div class="loader-spinner"></div>
-  <div class="loader-status" id="loader-status">Connecting…</div>
-</div>
-
-<div id="restore-banner"><div class="rb-spin"></div><span>Restoring your data from cloud…</span></div>
 <div class="app">
   <!-- HEADER -->
   <div class="header">
@@ -589,58 +489,6 @@ body::before{
       <div class="spacer"></div>
     </div>
 
-
-    <!-- NOTEPAD PAGE -->
-    <div class="page" id="page-notepad">
-      <div class="card" style="padding:0;overflow:hidden;margin-bottom:14px;">
-        <div class="np-hd">
-          <h2>✦ Quick Note</h2>
-          <p>Jot anything · convert to task in one tap</p>
-        </div>
-        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:13px;">
-          <textarea class="np-textarea" id="np-input" placeholder="What's on your mind?&#10;An idea, reminder, something to do…" rows="4"></textarea>
-          <div>
-            <div style="font-family:'Geist Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Category</div>
-            <div class="np-tag-pills">
-              <div class="np-tag-pill active" data-tag="general"  onclick="npTag(this)">General</div>
-              <div class="np-tag-pill"        data-tag="clinical"  onclick="npTag(this)">Clinical</div>
-              <div class="np-tag-pill"        data-tag="clinisynq" onclick="npTag(this)">Clinisynq</div>
-              <div class="np-tag-pill"        data-tag="research"  onclick="npTag(this)">Research</div>
-              <div class="np-tag-pill"        data-tag="personal"  onclick="npTag(this)">Personal</div>
-              <div class="np-tag-pill"        data-tag="idea"      onclick="npTag(this)">Idea 💡</div>
-            </div>
-          </div>
-          <div>
-            <div style="font-family:'Geist Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Priority</div>
-            <div class="np-pri-row">
-              <div class="np-pri-btn"        data-pri="high" onclick="npPri(this)">▲ High</div>
-              <div class="np-pri-btn np-med" data-pri="med"  onclick="npPri(this)">◆ Med</div>
-              <div class="np-pri-btn"        data-pri="low"  onclick="npPri(this)">▼ Low</div>
-            </div>
-          </div>
-          <div style="display:flex;gap:8px;">
-            <button onclick="npClear()" style="padding:12px 18px;border-radius:11px;background:var(--card-bg);border:1px solid var(--border2);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;">Clear</button>
-            <button class="np-save-btn" style="flex:1;" onclick="npSave()">⊕ Save Note</button>
-          </div>
-        </div>
-      </div>
-      <div class="card" style="padding:0;overflow:hidden;">
-        <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:var(--card-bg);">
-          <span style="font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:800;">◈ My Notes</span>
-          <span class="np-notes-badge" id="np-count">0 notes</span>
-        </div>
-        <div class="np-filter-strip">
-          <div class="np-filter-tab active" onclick="npFilter('all',this)">All</div>
-          <div class="np-filter-tab" onclick="npFilter('pending',this)">Pending</div>
-          <div class="np-filter-tab" onclick="npFilter('converted',this)">Converted</div>
-        </div>
-        <div id="np-list">
-          <div class="np-empty"><div class="np-empty-icon">📝</div><div class="np-empty-txt">No notes yet — jot one!</div></div>
-        </div>
-      </div>
-      <div class="spacer"></div>
-    </div>
-
   </div><!-- /main-scroll -->
 
   <!-- BOTTOM TAB BAR -->
@@ -657,8 +505,8 @@ body::before{
     <div class="tab-item" id="tab-projects" onclick="switchPage('projects',this)">
       <div class="tab-icon">◎</div><div class="tab-label">Projects</div>
     </div>
-    <div class="tab-item" id="tab-notepad" onclick="switchPage('notepad',this)">
-      <div class="tab-icon">📝</div><div class="tab-label">Notes</div>
+    <div class="tab-item" id="tab-updates" onclick="switchPage('updates',this)">
+      <div class="tab-icon">↑</div><div class="tab-label">Log</div>
     </div>
   </div>
 </div>
@@ -861,7 +709,7 @@ body::before{
 <!-- CONFIRM MODAL -->
 <div class="modal-overlay" id="confirm-modal" style="z-index:1000;display:none;">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px;max-width:320px;width:90%;margin:auto;">
-    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;margin-bottom:10px;" id="confirm-title">Confirm</div>
+    <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:10px;" id="confirm-title">Confirm</div>
     <p id="confirm-msg" style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px;"></p>
     <div style="display:flex;gap:10px;">
       <div class="btn btn-ghost" style="flex:1;text-align:center;" onclick="document.getElementById('confirm-modal').classList.remove('open');_confirmReject&&_confirmReject()">Cancel</div>
@@ -1048,130 +896,48 @@ function setSyncStatus(s){
 }
 
 // ── SUPABASE INIT ──
-async let lastPushAt=0,realtimeChannel=null,pollTimer=null;
+let lastPushAt=0, pollTimer=null;
 
 async function initSupabase(){
-  // Step 1: render immediately from localStorage
   tasks=JSON.parse(localStorage.getItem('cc_tasks')||'[]');
   timeBlocks=JSON.parse(localStorage.getItem('cc_tb')||'[]');
   updates=JSON.parse(localStorage.getItem('cc_updates')||'[]');
   projects=JSON.parse(localStorage.getItem('cc_projects')||'null')||[];
-  npNotes=JSON.parse(localStorage.getItem('np_notes_v2')||'[]');
-  runMigration();render();npRender();
-  if(tasks.length===0&&projects.length===0){var rb=document.getElementById('restore-banner');if(rb)rb.style.display='flex';}
-  // Step 2: connect and sync in background
+  runMigration(); render();
   try{
-    if(!window.supabase)throw new Error('Supabase library not loaded');
     sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
     supabaseReady=true;
     setSyncStatus('syncing');
     await pullFromSupabase();
     setSyncStatus('synced');
-    var rb=document.getElementById('restore-banner');if(rb)rb.style.display='none';
-    startRealtime();
-    startPolling();
     document.addEventListener('visibilitychange',()=>{
-      if(document.visibilityState==='visible'&&supabaseReady){
-        if(Date.now()-lastPushAt>2000){
-          setSyncStatus('syncing');
-          pullFromSupabase().then(()=>setSyncStatus('synced'));
-        }
+      if(document.visibilityState==='visible'&&supabaseReady&&Date.now()-lastPushAt>2000){
+        setSyncStatus('syncing');
+        pullFromSupabase().then(()=>setSyncStatus('synced'));
       }
     });
+    pollTimer=setInterval(()=>{
+      if(supabaseReady&&document.hasFocus()&&Date.now()-lastPushAt>3000) pullFromSupabase();
+    },30000);
   }catch(e){
     console.warn('Supabase init failed:',e);
     setSyncStatus('offline');
-    var rb2=document.getElementById('restore-banner');if(rb2)rb2.style.display='none';
-    setTimeout(retryConnection,15000);
   }
-}
-
-async function retryConnection(){
-  if(supabaseReady)return;
-  try{
-    sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-    supabaseReady=true;
-    setSyncStatus('syncing');
-    await pullFromSupabase();
-    setSyncStatus('synced');
-    startRealtime();startPolling();
-  }catch(e){setTimeout(retryConnection,15000);}
-}
-
-function startRealtime(){
-  if(realtimeChannel)realtimeChannel.unsubscribe();
-  realtimeChannel=sb.channel('cc-sync-mob')
-    .on('postgres_changes',{event:'*',schema:'public',table:'tasks'},handleRemoteChange)
-    .on('postgres_changes',{event:'*',schema:'public',table:'time_blocks'},handleRemoteChange)
-    .on('postgres_changes',{event:'*',schema:'public',table:'updates'},handleRemoteChange)
-    .on('postgres_changes',{event:'*',schema:'public',table:'projects'},handleRemoteChange)
-    .on('postgres_changes',{event:'*',schema:'public',table:'notepad_notes'},handleRemoteChange)
-    .subscribe();
-}
-
-function startPolling(){
-  if(pollTimer)clearInterval(pollTimer);
-  pollTimer=setInterval(async()=>{
-    if(!supabaseReady||!document.hasFocus())return;
-    if(Date.now()-lastPushAt<3000)return;
-    await pullFromSupabase();
-  },30000);
-}
-
-let remoteChangeTimer=null;
-function handleRemoteChange(){
-  if(Date.now()-lastPushAt<2000)return;
-  clearTimeout(remoteChangeTimer);
-  remoteChangeTimer=setTimeout(async()=>{
-    setSyncStatus('syncing');
-    await pullFromSupabase();
-    setSyncStatus('synced');
-  },300);
 }
 
 // ── PULL: Supabase → local ──
 async function pullFromSupabase(){
   if(!supabaseReady)return;
-  const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('pull_timeout')),15000));
-  let t,tb,u,pr,np=null;
-  try{
-    [t,tb,u,pr]=await Promise.race([
-      Promise.all([
-        sb.from('tasks').select('*').order('created_at',{ascending:true}),
-        sb.from('time_blocks').select('*').order('created_at',{ascending:true}),
-        sb.from('updates').select('*').order('time',{ascending:false}),
-        sb.from('projects').select('*').order('sort_order',{ascending:true}),
-      ]),
-      timeout
-    ]);
-    try{ np=await sb.from('notepad_notes').select('*').order('created_at',{ascending:false}); }
-    catch(npErr){ np={error:{code:'fetch_failed'},data:null}; }
-  }catch(fetchErr){
-    console.warn('Supabase pull failed/timed out:',fetchErr.message);
-    tasks=JSON.parse(localStorage.getItem('cc_tasks')||'[]');
-    timeBlocks=JSON.parse(localStorage.getItem('cc_tb')||'[]');
-    updates=JSON.parse(localStorage.getItem('cc_updates')||'[]');
-    projects=JSON.parse(localStorage.getItem('cc_projects')||'null')||[];
-    npNotes=JSON.parse(localStorage.getItem('np_notes_v2')||'[]');
-    runMigration();render();npRender();
-    setSyncStatus('offline');
-    return;
-  }
+  const[t,tb,u,pr]=await Promise.all([
+    sb.from('tasks').select('*').order('created_at',{ascending:true}),
+    sb.from('time_blocks').select('*').order('created_at',{ascending:true}),
+    sb.from('updates').select('*').order('time',{ascending:false}),
+    sb.from('projects').select('*').order('sort_order',{ascending:true}),
+  ]);
   if(t.error){console.warn('tasks pull:',t.error);}
   else{tasks=t.data.map(fromRow_task);localStorage.setItem('cc_tasks',JSON.stringify(tasks));}
   if(tb.error){console.warn('time_blocks pull:',tb.error);}
   else{timeBlocks=tb.data.map(fromRow_tb);localStorage.setItem('cc_tb',JSON.stringify(timeBlocks));}
-  if(np&&!np.error&&np.data){
-    // Supabase is source of truth — never merge local notes (avoids un-deleting deleted notes)
-    npNotes=np.data.map(r=>({id:r.id,text:r.text,tag:r.tag||'general',
-      priority:r.priority||'med',converted:r.converted||false,
-      createdAt:r.created_at,taskId:r.task_id||null}))
-      .sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
-    localStorage.setItem('np_notes_v2',JSON.stringify(npNotes));
-    npRender();
-  } else if(np&&np.error&&np.error.code==='42P01'){
-    console.warn('notepad_notes table not yet created in Supabase - notes stored locally');
-  }
   if(u.error){console.warn('updates pull:',u.error);}
   else{updates=u.data.map(fromRow_update);localStorage.setItem('cc_updates',JSON.stringify(updates));}
   if(pr.error){console.warn('projects pull:',pr.error);}
@@ -1184,7 +950,7 @@ async function pullFromSupabase(){
     projects=realProjects.map(fromRow_project);
     localStorage.setItem('cc_projects',JSON.stringify(projects));
   }
-  runMigration();render();npRender();
+  runMigration();render();
 }
 
 // ── PUSH: local → Supabase ──
@@ -1202,7 +968,6 @@ async function pushToSupabase(){
       sb.from('time_blocks').upsert(timeBlocks.map(toRow_tb),{onConflict:'id'}),
       sb.from('updates').upsert(updates.map(toRow_update),{onConflict:'id'}),
       sb.from('projects').upsert(projRows,{onConflict:'name'}),
-      // notepad_notes excluded — each op upserts/deletes directly
     ]);
     const errs=results.filter(r=>r.error);
     if(errs.length){console.warn('Push errors:',errs.map(r=>r.error));setSyncStatus('offline');}
@@ -1365,8 +1130,8 @@ function mobRenderByStatus(list){
     if(!items.length)return;
     html+=`<div style="padding:10px 16px 4px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border);background:var(--surface2);">
       <span style="color:${g.color};font-size:11px;">${g.icon}</span>
-      <span style="font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);">${g.label}</span>
-      <span style="font-family:'Geist Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${items.length}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);">${g.label}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${items.length}</span>
     </div>`;
     html+=items.map(taskRowHTML).join('');
   });
@@ -1382,15 +1147,15 @@ function mobRenderByProject(list){
     const p=getProj(name);const c=p.color||'#888';
     html+=`<div style="padding:10px 16px 4px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border);background:var(--surface2);border-left:3px solid ${c};">
       <span style="color:${c};font-size:13px;">${p.icon||'◆'}</span>
-      <span style="font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text2);">${name}</span>
-      <span style="font-family:'Geist Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${items.length}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text2);">${name}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${items.length}</span>
     </div>`;
     html+=items.map(taskRowHTML).join('');
   });
   if(unassigned.length){
     html+=`<div style="padding:10px 16px 4px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border);background:var(--surface2);">
-      <span style="font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);">No Project</span>
-      <span style="font-family:'Geist Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${unassigned.length}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);">No Project</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${unassigned.length}</span>
     </div>`;
     html+=unassigned.map(taskRowHTML).join('');
   }
@@ -1408,7 +1173,7 @@ function mobRenderByFolder(list){
       html+=`<div class="mob-folder-group-hdr" style="padding-left:${16+indent}px;">
         <span style="color:var(--text3);font-size:10px;">▾</span>
         <span class="mob-folder-group-name">${folder.id}</span>
-        <span style="font-family:'Geist Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${folderTasks.length}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${folderTasks.length}</span>
       </div>`;
       folderProjs.forEach(proj=>{
         const items=list.filter(t=>t.project===proj.name).sort((a,b)=>priOrder[a.priority]-priOrder[b.priority]);
@@ -1416,8 +1181,8 @@ function mobRenderByFolder(list){
         const c=proj.color||'#888';
         html+=`<div style="padding:8px ${16}px 4px ${22+indent}px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border);background:var(--surface2);border-left:3px solid ${c};">
           <span style="color:${c};font-size:12px;">${proj.icon||'◆'}</span>
-          <span style="font-family:'Geist Mono',monospace;font-size:9px;text-transform:uppercase;color:var(--text2);">${proj.name}</span>
-          <span style="font-family:'Geist Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${items.length}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;color:var(--text2);">${proj.name}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${items.length}</span>
         </div>`;
         html+=items.map(taskRowHTML).join('');
       });
@@ -1434,15 +1199,15 @@ function mobRenderByFolder(list){
     const c=proj.color||'#888';
     ungroupedHtml+=`<div style="padding:10px 16px 4px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border);background:var(--surface2);border-left:3px solid ${c};">
       <span style="color:${c};font-size:12px;">${proj.icon||'◆'}</span>
-      <span style="font-family:'Geist Mono',monospace;font-size:9px;text-transform:uppercase;color:var(--text2);">${proj.name}</span>
-      <span style="font-family:'Geist Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${items.length}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;color:var(--text2);">${proj.name}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${items.length}</span>
     </div>`;
     ungroupedHtml+=items.map(taskRowHTML).join('');
   });
   if(ungroupedHtml)html+=`<div class="mob-folder-group-hdr"><span class="mob-folder-group-name">No Folder</span></div>`+ungroupedHtml;
   const noProj=list.filter(t=>!t.project||!projects.find(p=>p.name===t.project));
   if(noProj.length){
-    html+=`<div class="mob-folder-group-hdr"><span class="mob-folder-group-name">No Project</span><span style="font-family:'Geist Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${noProj.length}</span></div>`;
+    html+=`<div class="mob-folder-group-hdr"><span class="mob-folder-group-name">No Project</span><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;">${noProj.length}</span></div>`;
     html+=noProj.map(taskRowHTML).join('');
   }
   return html||`<div class="empty"><div class="empty-icon">✦</div>No tasks.</div>`;
@@ -1605,7 +1370,7 @@ function renderProjects(){
   let html=renderFolderSection(null,0);
   const ungrouped=projects.filter(p=>!p.folder);
   if(ungrouped.length){
-    if(getRootFolders().length)html+=`<div style="font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:4px 0 12px;">Ungrouped</div>`;
+    if(getRootFolders().length)html+=`<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:4px 0 12px;">Ungrouped</div>`;
     html+=ungrouped.map(p=>makeCard(p,0)).join('');
   }
   html+=`<div class="proj-card" onclick="openAddProject()" style="border:1.5px dashed var(--border);display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text3);min-height:90px;background:transparent;margin-top:4px;flex-direction:column;">
@@ -2113,8 +1878,8 @@ function renderMobProjectDetail(projName){
     if(!list.length)return;
     html+=`<div class="mob-status-header">
       <span style="color:${s.color};font-size:11px;">${s.icon}</span>
-      <span style="font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);">${s.label}</span>
-      <span style="margin-left:auto;font-family:'Geist Mono',monospace;font-size:9px;color:var(--text3);">${list.length}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);">${s.label}</span>
+      <span style="margin-left:auto;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);">${list.length}</span>
     </div>
     <div class="card">${list.map(taskRowHTML).join('')}</div>`;
   });
@@ -2144,8 +1909,8 @@ function renderMobFolderDetail(folderName){
       <span>${folderName}</span>
     </div>
     <div style="margin-bottom:20px;">
-      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px;">▸ ${folderName}</div>
-      <div style="font-family:'Geist Mono',monospace;font-size:10px;color:var(--text3);">${folderProjs.length} project${folderProjs.length!==1?'s':''}${subFolders.length?' · '+subFolders.length+' sub-folder'+(subFolders.length!==1?'s':''):''}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px;">▸ ${folderName}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);">${folderProjs.length} project${folderProjs.length!==1?'s':''}${subFolders.length?' · '+subFolders.length+' sub-folder'+(subFolders.length!==1?'s':''):''}</div>
     </div>`;
   if(subFolders.length){
     html+=`<div class="section-label">Sub-folders</div>`;
@@ -2259,289 +2024,11 @@ function updateNotifBtn(){
   btn.textContent='Notifs: '+(Notification.permission==='denied'?'Blocked':on?'On':'Off');
 }
 
-render();npRender();
+render();
 initNotifications();updateNotifBtn();
 // Wire Enter on mob quick proj name
 const _mqpn=document.getElementById('mob-quick-proj-name');
 if(_mqpn)_mqpn.addEventListener('keydown',e=>{if(e.key==='Enter')mobQuickCreateProject();});
-
-// ════════════════════════════════════════════════
-//  LAUNCHER
-// ════════════════════════════════════════════════
-const PROJ_COLORS_NP=['#7c6ef5','#34d399','#fbbf24','#fb7185','#38bdf8','#a78bfa','#e8923a','#f472b6','#22d3ee','#84cc16'];
-
-function launchApp(app){
-  document.getElementById('launcher').classList.add('hidden');
-  if(app==='np') switchPage('notepad', document.getElementById('tab-notepad'));
-}
-
-// ════════════════════════════════════════════════
-//  NOTEPAD
-// ════════════════════════════════════════════════
-const NP_LS_KEY='np_notes_v2';
-let npNotes=[];
-let npActiveTag='general';
-let npActivePri='med';
-let npActiveFilter='all';
-let npConvNote=null;
-let npSelProjName='';
-let npSelProjColor='';
-let npNewProjColor=PROJ_COLORS_NP[0];
-
-// ── Persist locally always ──
-function npSaveLocal(){localStorage.setItem(NP_LS_KEY,JSON.stringify(npNotes));}
-
-// ── Helpers ──
-function npTagColor(tag){const m={general:'rgba(255,255,255,0.1)',clinical:'rgba(34,211,255,0.14)',clinisynq:'rgba(123,104,255,0.18)',research:'rgba(192,132,252,0.16)',personal:'rgba(255,204,68,0.15)',idea:'rgba(0,229,160,0.16)'};return m[tag]||m.general;}
-function npTagText(tag){const m={general:'rgba(255,255,255,0.45)',clinical:'rgba(34,211,255,0.9)',clinisynq:'rgba(123,104,255,0.9)',research:'rgba(192,132,252,0.9)',personal:'rgba(255,204,68,0.9)',idea:'rgba(0,229,160,0.9)'};return m[tag]||m.general;}
-function npPriLbl(p){return p==='high'?'▲ HIGH':p==='med'?'◆ MED':'▼ LOW';}
-function npPriCol(p){return p==='high'?'var(--rose)':p==='med'?'var(--amber)':'var(--green)';}
-function npFmtTime(iso){const d=new Date(iso),diff=(Date.now()-d)/1000;if(diff<60)return 'just now';if(diff<3600)return Math.floor(diff/60)+'m ago';if(diff<86400)return Math.floor(diff/3600)+'h ago';return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
-function npEsc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
-function npEscA(s){return(s||'').replace(/'/g,"&#39;").replace(/"/g,'&quot;');}
-
-// ── UI ──
-function npTag(el){document.querySelectorAll('#page-notepad .np-tag-pill').forEach(p=>p.classList.remove('active'));el.classList.add('active');npActiveTag=el.dataset.tag;}
-function npPri(el){document.querySelectorAll('#page-notepad .np-pri-btn').forEach(b=>b.className='np-pri-btn');const p=el.dataset.pri;npActivePri=p;el.classList.add(p==='high'?'np-high':p==='med'?'np-med':'np-low');}
-function npFilter(f,el){npActiveFilter=f;document.querySelectorAll('.np-filter-tab').forEach(t=>t.classList.remove('active'));if(el)el.classList.add('active');npRender();}
-function npClear(){
-  const i=document.getElementById('np-input');if(i)i.value='';
-  document.querySelectorAll('#page-notepad .np-tag-pill').forEach(p=>p.classList.remove('active'));
-  document.querySelector('#page-notepad [data-tag="general"]')?.classList.add('active');npActiveTag='general';
-  document.querySelectorAll('#page-notepad .np-pri-btn').forEach(b=>b.className='np-pri-btn');
-  document.querySelector('#page-notepad [data-pri="med"]')?.classList.add('np-med');npActivePri='med';
-}
-
-// ── Save ──
-async function npSave(){
-  const text=(document.getElementById('np-input')?.value||'').trim();
-  if(!text){showToast('⚠','Write something first');return;}
-  const note={id:uid(),text,tag:npActiveTag,priority:npActivePri,converted:false,createdAt:new Date().toISOString()};
-  npNotes.unshift(note);
-  npSaveLocal();   // localStorage immediately
-  npClear();npRender();
-  showToast('✦','Note saved');
-  // Upsert this note immediately
-  lastPushAt=Date.now();
-  if(supabaseReady){
-    try{
-      await sb.from('notepad_notes').upsert({
-        id:note.id,text:note.text,tag:note.tag,priority:note.priority,
-        converted:false,created_at:note.createdAt,task_id:null
-      },{onConflict:'id'});
-    }catch(e2){ console.warn('np upsert failed:',e2); }
-  }
-}
-
-// ── Delete ──
-async function npDel(id,e){
-  if(e)e.stopPropagation();
-  npNotes=npNotes.filter(n=>n.id!==id);
-  npSaveLocal();npRender();
-  showToast('↓','Note deleted');
-  // Immediate DELETE
-  lastPushAt=Date.now();
-  if(supabaseReady){
-    try{ await sb.from('notepad_notes').delete().eq('id',id); }
-    catch(e2){ console.warn('np delete sync failed:',e2); }
-  }
-}
-
-// ── Convert modal ──
-function npOpenConv(id,e){
-  if(e)e.stopPropagation();
-  npConvNote=npNotes.find(n=>n.id===id);
-  if(!npConvNote)return;
-  document.getElementById('np-conv-name').value=npConvNote.text.split('\n')[0].slice(0,80);
-  document.getElementById('np-conv-pri').value=npConvNote.priority;
-  document.getElementById('np-conv-due').value='';
-  document.getElementById('np-conv-preview').textContent=npConvNote.text;
-  const tagMap={clinisynq:'Clinisynq',research:'Research'};
-  const autoName=tagMap[npConvNote.tag]||'';
-  const match=projects.find(p=>p.name===autoName);
-  npPickProj(match?match.name:'',match?match.color:'');
-  document.getElementById('np-conv-modal').classList.add('open');
-}
-function npCloseConv(){
-  document.getElementById('np-conv-modal').classList.remove('open');
-  npConvNote=null;npHideNewProj();
-}
-function npDoConv(){
-  const name=(document.getElementById('np-conv-name')?.value||'').trim();
-  if(!name){showToast('⚠','Task name required');return;}
-  const priority=document.getElementById('np-conv-pri').value;
-  const project=(document.getElementById('np-conv-proj')?.value||'').trim();
-  const due=document.getElementById('np-conv-due').value;
-  const tid=uid();
-  tasks.push({id:tid,name,project,priority,status:'todo',due,desc:npConvNote.text,notes:'',taskUpdates:[],subtasks:[]});
-  save();
-  const n=npNotes.find(x=>x.id===npConvNote.id);
-  if(n){n.converted=true;n.taskId=tid;}
-  npSaveLocal();npRender();render();npCloseConv();
-  showToast('✦',`Task "${name}" created!`);
-  schedulePush(); // push task changes
-  // Also update note's converted state immediately
-  const _cn=npNotes.find(x=>x.id===npConvNote.id);
-  if(_cn && supabaseReady){
-    try{
-      await sb.from('notepad_notes').upsert({
-        id:_cn.id,text:_cn.text,tag:_cn.tag,priority:_cn.priority,
-        converted:true,created_at:_cn.createdAt,task_id:tid
-      },{onConflict:'id'});
-    }catch(e2){ console.warn('np convert sync failed:',e2); }
-  }
-}
-
-// ── Project dropdown ──
-function npBuildProjList(){
-  const list=document.getElementById('np-proj-dd-list');if(!list)return;
-  list.innerHTML=projects.map(p=>`<div class="np-proj-opt ${npSelProjName===p.name?'selected':''}" onclick="npPickProj('${npEscA(p.name)}','${npEscA(p.color)}')"><span style="width:9px;height:9px;border-radius:50%;background:${p.color};display:inline-block;"></span><span>${npEsc(p.name)}</span></div>`).join('');
-}
-function npToggleProjDd(){
-  const dd=document.getElementById('np-proj-dd'),tr=document.getElementById('np-proj-trigger');
-  if(dd.classList.contains('open')){npCloseProjDd();return;}
-  npBuildProjList();dd.classList.add('open');tr.classList.add('open');
-}
-function npCloseProjDd(){
-  document.getElementById('np-proj-dd')?.classList.remove('open');
-  document.getElementById('np-proj-trigger')?.classList.remove('open');
-}
-function npPickProj(name,color){
-  npSelProjName=name;npSelProjColor=color;
-  document.getElementById('np-conv-proj').value=name;
-  document.getElementById('np-proj-val').textContent=name||'— No Project —';
-  document.getElementById('np-proj-dot').style.background=name?color:'var(--border2)';
-  npCloseProjDd();npHideNewProj();
-}
-function npShowNewProj(){
-  npCloseProjDd();
-  const p=document.getElementById('np-new-proj-panel');if(!p)return;
-  p.style.display='flex';
-  const cs=document.getElementById('np-color-swatches');
-  if(cs)cs.innerHTML=PROJ_COLORS_NP.map(c=>`<div class="np-cswatch ${c===npNewProjColor?'active':''}" style="background:${c};border-color:${c===npNewProjColor?'white':'transparent'}" onclick="npPickColor('${c}',this)"></div>`).join('');
-  document.getElementById('np-new-proj-name').value='';
-  document.getElementById('np-new-proj-name').focus();
-}
-function npHideNewProj(){const p=document.getElementById('np-new-proj-panel');if(p)p.style.display='none';}
-function npPickColor(c,el){
-  npNewProjColor=c;
-  document.querySelectorAll('.np-cswatch').forEach(s=>{s.classList.remove('active');s.style.borderColor='transparent';});
-  el.classList.add('active');el.style.borderColor='white';
-}
-function npCreateProj(){
-  const name=(document.getElementById('np-new-proj-name')?.value||'').trim();
-  if(!name){showToast('⚠','Enter a name');return;}
-  if(projects.find(p=>p.name===name)){showToast('⚠','Already exists');return;}
-  projects.push({name,color:npNewProjColor,icon:'◆',desc:'',folder:''});
-  saveProjects();npHideNewProj();npPickProj(name,npNewProjColor);
-  render();showToast('◎',`"${name}" created`);
-}
-
-// ── Render ──
-function npRender(){
-  let list=npNotes;
-  if(npActiveFilter==='pending')list=npNotes.filter(n=>!n.converted);
-  if(npActiveFilter==='converted')list=npNotes.filter(n=>n.converted);
-  const count=document.getElementById('np-count');
-  if(count)count.textContent=`${list.length} note${list.length!==1?'s':''}`;
-  const el=document.getElementById('np-list');if(!el)return;
-  const msgs={all:'No notes yet — jot one!',pending:'No pending notes',converted:'No converted notes'};
-  el.innerHTML=list.length?list.map(n=>`
-    <div class="np-note-card ${n.converted?'np-converted':''}">
-      <div class="np-card-row">
-        <div class="np-note-text ${n.converted?'np-strike':''}">${npEsc(n.text)}</div>
-        <div class="np-card-btns">
-          ${!n.converted?`<div class="np-cb np-to-task" onclick="npOpenConv('${n.id}',event)">→ Task</div>`:''}
-          <div class="np-cb np-del" onclick="npDel('${n.id}',event)">✕</div>
-        </div>
-      </div>
-      <div class="np-card-meta">
-        <span class="np-tag-badge" style="background:${npTagColor(n.tag)};color:${npTagText(n.tag)}">${n.tag}</span>
-        <span class="np-pri-lbl" style="color:${npPriCol(n.priority)}">${npPriLbl(n.priority)}</span>
-        ${n.converted?'<span class="np-conv-badge">✓ Task Created</span>':''}
-        <span class="np-time-lbl">${npFmtTime(n.createdAt)}</span>
-      </div>
-    </div>`).join('')
-    :`<div class="np-empty"><div class="np-empty-icon">📝</div><div class="np-empty-txt">${msgs[npActiveFilter]}</div></div>`;
-}
-
-// ── Wire outside click for project dropdown ──
-document.addEventListener('click',e=>{
-  if(!document.getElementById('np-proj-wrap')?.contains(e.target))npCloseProjDd();
-});
-
-// Note bootstrap handled in initSupabase (waits for Supabase pull)
-
 </script>
-
-<!-- NOTEPAD CONVERT MODAL -->
-<div class="modal-overlay" id="np-conv-modal" onclick="if(event.target===this)npCloseConv()">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">⊕ Note → Task</div>
-      <span class="modal-close" onclick="npCloseConv()">×</span>
-    </div>
-    <div class="modal-body" style="display:flex;flex-direction:column;gap:13px;">
-      <div>
-        <div class="field-label">Task Name *</div>
-        <input class="field-input" id="np-conv-name" placeholder="Task name…">
-      </div>
-      <div>
-        <div class="field-label">Project</div>
-        <div class="np-proj-wrap" id="np-proj-wrap">
-          <div class="np-proj-trigger" id="np-proj-trigger" onclick="npToggleProjDd()">
-            <span class="np-proj-dot" id="np-proj-dot" style="background:var(--border2)"></span>
-            <span class="np-proj-val" id="np-proj-val">— No Project —</span>
-            <span class="np-proj-arrow">▾</span>
-          </div>
-          <div class="np-proj-dd" id="np-proj-dd">
-            <div class="np-proj-opt" onclick="npPickProj('','')">
-              <span style="width:9px;height:9px;border-radius:50%;background:var(--border2);display:inline-block;"></span>
-              <span>— No Project —</span>
-            </div>
-            <div id="np-proj-dd-list"></div>
-            <div class="np-proj-opt np-proj-add" onclick="npShowNewProj()">
-              <span style="color:var(--accent);font-size:16px;">＋</span>
-              <span style="color:var(--accent);">New Project…</span>
-            </div>
-          </div>
-        </div>
-        <input type="hidden" id="np-conv-proj" value="">
-        <div id="np-new-proj-panel" style="display:none;margin-top:8px;background:var(--surface);border:1px solid var(--border2);border-radius:11px;padding:12px;flex-direction:column;gap:9px;">
-          <input class="field-input" id="np-new-proj-name" placeholder="Project name…"
-            onkeydown="if(event.key==='Enter')npCreateProj();if(event.key==='Escape')npHideNewProj();">
-          <div>
-            <div class="field-label" style="margin-bottom:7px;">Color</div>
-            <div style="display:flex;gap:7px;flex-wrap:wrap;" id="np-color-swatches"></div>
-          </div>
-          <div style="display:flex;gap:8px;">
-            <button onclick="npHideNewProj()" style="flex:1;padding:10px;border-radius:10px;background:var(--card-bg);border:1px solid var(--border2);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;">Cancel</button>
-            <button onclick="npCreateProj()" style="flex:1;padding:10px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#5c4fe0);border:none;color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Create</button>
-          </div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <div>
-          <div class="field-label">Priority</div>
-          <select class="field-select" id="np-conv-pri">
-            <option value="high">🔴 High</option>
-            <option value="med" selected>🟡 Med</option>
-            <option value="low">🟢 Low</option>
-          </select>
-        </div>
-        <div>
-          <div class="field-label">Due Date</div>
-          <input class="field-input" id="np-conv-due" type="date">
-        </div>
-      </div>
-      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--text2);line-height:1.5;max-height:60px;overflow-y:auto;" id="np-conv-preview"></div>
-    </div>
-    <div style="padding:12px 16px 20px;border-top:1px solid var(--border);display:flex;gap:8px;">
-      <button onclick="npCloseConv()" style="padding:11px 18px;border-radius:11px;background:var(--card-bg);border:1px solid var(--border2);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;">Cancel</button>
-      <button onclick="npDoConv()" style="flex:1;padding:11px;border-radius:11px;background:linear-gradient(135deg,var(--accent),#5c4fe0);border:none;color:white;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px var(--accent-soft);">✦ Create Task</button>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
