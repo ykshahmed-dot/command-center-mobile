@@ -466,6 +466,11 @@ body::before{
 
 }
 
+
+/* RESTORE BANNER */
+#restore-banner{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:5000;background:var(--accent);color:white;border-radius:14px;padding:12px 20px;display:none;align-items:center;gap:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;box-shadow:0 8px 32px rgba(123,104,255,0.5);white-space:nowrap;}
+#restore-banner .rb-spin{width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:rbspin 0.7s linear infinite;}
+@keyframes rbspin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body data-theme="dark">
@@ -488,6 +493,7 @@ body::before{
   <div class="loader-status" id="loader-status">Connecting…</div>
 </div>
 
+<div id="restore-banner"><div class="rb-spin"></div><span>Restoring your data from cloud…</span></div>
 <div class="app">
   <!-- HEADER -->
   <div class="header">
@@ -1052,6 +1058,7 @@ async function initSupabase(){
   projects=JSON.parse(localStorage.getItem('cc_projects')||'null')||[];
   npNotes=JSON.parse(localStorage.getItem('np_notes_v2')||'[]');
   runMigration();render();npRender();
+  if(tasks.length===0&&projects.length===0){var rb=document.getElementById('restore-banner');if(rb)rb.style.display='flex';}
   // Step 2: connect and sync in background
   try{
     if(!window.supabase)throw new Error('Supabase library not loaded');
@@ -1060,6 +1067,7 @@ async function initSupabase(){
     setSyncStatus('syncing');
     await pullFromSupabase();
     setSyncStatus('synced');
+    var rb=document.getElementById('restore-banner');if(rb)rb.style.display='none';
     startRealtime();
     startPolling();
     document.addEventListener('visibilitychange',()=>{
@@ -1073,6 +1081,7 @@ async function initSupabase(){
   }catch(e){
     console.warn('Supabase init failed:',e);
     setSyncStatus('offline');
+    var rb2=document.getElementById('restore-banner');if(rb2)rb2.style.display='none';
     setTimeout(retryConnection,15000);
   }
 }
