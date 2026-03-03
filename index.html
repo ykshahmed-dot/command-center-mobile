@@ -1137,13 +1137,30 @@ function handleRemoteChange(){
 // ── PULL: Supabase → local ──
 async function pullFromSupabase(){
   if(!supabaseReady)return;
-  const[t,tb,u,pr,np]=await Promise.all([
-    sb.from('tasks').select('*').order('created_at',{ascending:true}),
-    sb.from('time_blocks').select('*').order('created_at',{ascending:true}),
-    sb.from('updates').select('*').order('time',{ascending:false}),
-    sb.from('projects').select('*').order('sort_order',{ascending:true}),
-    sb.from('notepad_notes').select('*').order('created_at',{ascending:false}),
-  ]);
+  const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('pull_timeout')),8000));
+  let t,tb,u,pr,np;
+  try{
+    [t,tb,u,pr,np]=await Promise.race([
+      Promise.all([
+        sb.from('tasks').select('*').order('created_at',{ascending:true}),
+        sb.from('time_blocks').select('*').order('created_at',{ascending:true}),
+        sb.from('updates').select('*').order('time',{ascending:false}),
+        sb.from('projects').select('*').order('sort_order',{ascending:true}),
+        sb.from('notepad_notes').select('*').order('created_at',{ascending:false}),
+      ]),
+      timeout
+    ]);
+  }catch(fetchErr){
+    console.warn('Supabase pull failed/timed out:',fetchErr.message);
+    tasks=JSON.parse(localStorage.getItem('cc_tasks')||'[]');
+    timeBlocks=JSON.parse(localStorage.getItem('cc_tb')||'[]');
+    updates=JSON.parse(localStorage.getItem('cc_updates')||'[]');
+    projects=JSON.parse(localStorage.getItem('cc_projects')||'null')||[];
+    npNotes=JSON.parse(localStorage.getItem('np_notes_v2')||'[]');
+    runMigration();render();npRender();
+    setSyncStatus('offline');
+    return;
+  }
   if(t.error){console.warn('tasks pull:',t.error);}
   else{tasks=t.data.map(fromRow_task);localStorage.setItem('cc_tasks',JSON.stringify(tasks));}
   if(tb.error){console.warn('time_blocks pull:',tb.error);}
