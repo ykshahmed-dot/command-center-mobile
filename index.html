@@ -1132,19 +1132,20 @@ function handleRemoteChange(){
 // ── PULL: Supabase → local ──
 async function pullFromSupabase(){
   if(!supabaseReady)return;
-  const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('pull_timeout')),8000));
-  let t,tb,u,pr,np;
+  const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('pull_timeout')),15000));
+  let t,tb,u,pr,np=null;
   try{
-    [t,tb,u,pr,np]=await Promise.race([
+    [t,tb,u,pr]=await Promise.race([
       Promise.all([
         sb.from('tasks').select('*').order('created_at',{ascending:true}),
         sb.from('time_blocks').select('*').order('created_at',{ascending:true}),
         sb.from('updates').select('*').order('time',{ascending:false}),
         sb.from('projects').select('*').order('sort_order',{ascending:true}),
-        sb.from('notepad_notes').select('*').order('created_at',{ascending:false}),
       ]),
       timeout
     ]);
+    try{ np=await sb.from('notepad_notes').select('*').order('created_at',{ascending:false}); }
+    catch(npErr){ np={error:{code:'fetch_failed'},data:null}; }
   }catch(fetchErr){
     console.warn('Supabase pull failed/timed out:',fetchErr.message);
     tasks=JSON.parse(localStorage.getItem('cc_tasks')||'[]');
